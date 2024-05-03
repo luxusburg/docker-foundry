@@ -32,6 +32,6 @@ RUN rm -rf /var/lib/apt/lists/* && \
     apt autoremove -y
 
 COPY ./files/start.sh /start.sh
-COPY ./files/app.cfg /mnt/foundry/server
+COPY ./files/app.cfg /home/steam/app.cfg
 RUN chmod +x /start.sh
 CMD ["/start.sh"]

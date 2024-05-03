@@ -13,7 +13,12 @@ echo "Updating Foundry Dedicated Server files..."
 echo " "
 /usr/bin/steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir "$s" +login anonymous +app_update 2915550 validate +quit
 echo "steam_appid: "`cat $s/steam_appid.txt`
-
+echo " "
+echo "Checking if app.cfg files exists"
+if [ ! -f "$s/app.cfg" ]; then
+        echo "$s/app.cfg not found. Copying default file."
+        cp "/home/steam/app.cfg" "$p/" 2>&1
+fi
 cd "$s"
 echo "Starting Foundry Dedicated Server"
 echo " "
