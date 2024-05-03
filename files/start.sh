@@ -17,13 +17,13 @@ echo " "
 echo "Checking if app.cfg files exists"
 if [ ! -f "$s/app.cfg" ]; then
         echo "$s/app.cfg not found. Copying default file."
-        cp "/home/steam/app.cfg" "$p/" 2>&1
+        cp "/home/steam/app.cfg" "$s/" 2>&1
 fi
 cd "$s"
 echo "Starting Foundry Dedicated Server"
 echo " "
 echo "Starting Xvfb"
-Xvfb :0 -screen 0 1024x768x16 &
+Xvfb :0 -screen 0 640x480x24:32 &
 echo "Launching wine Foundry"
 echo " "
 DISPLAY=:0.0 wine /mnt/foundry/server/FoundryDedicatedServer.exe -log 2>&1
