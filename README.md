@@ -17,6 +17,11 @@ This Docker container has been tested and will work on the following OS:
 >Could also be for all Proton players?
 
 This is my first Docker image ever created I am always open for improving it! 
+
+> [!TIP]
+> Don't forget to change the values in ./server/app.cfg file that's where you can change the password of the server
+> [Link](https://dedicated.foundry-game.com/) from the devs what you can change in that file
+
 ## Docker Run
 
 **This will create the folders './server' and './data' in your current folder where you execute the code**
