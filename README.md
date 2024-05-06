@@ -60,9 +60,9 @@ services:
     network_mode: bridge
     environment:
       - TZ=Europe/Paris
-	  - SERVER_PWD=change_me
-	  - SERVER_NAME='Foundry docker by Luxusburg'
-	  - PAUSE_SERVER_WHEN_EMPTY=false
+      - SERVER_PWD=change_me
+      - SERVER_NAME='Foundry docker by Luxusburg'
+      - PAUSE_SERVER_WHEN_EMPTY=false
     volumes:
       - './server:/mnt/foundry/server:rw'
       - './data:/mnt/foundry/persistentdata:rw'
@@ -80,7 +80,7 @@ You can use these environment variables for your docker container:
 | TZ | Europe/Paris | timezone |
 | WORLD_NAME | optional save name for map | Sets the server world name. This is the folder where the save files will be stored. |
 | SERVER_PWD | optional password | Sets the server password. |
-| PAUSE_SERVER_WHEN_EMPTY | optional : true or false  | Will the server pause when nobody is connected. |
+| PAUSE_SERVER_WHEN_EMPTY | optional: true or false  | Will the server pause when nobody is connected. |
 | AUTOSAVE_INTERVAL | optional in seconds | Sets the autosave frequency in seconds. |
 | SERVER_IS_PUBLIC | optional: true of false | Sets whether the server is listed on the Steam server browser. |
 | SERVER_PORT | optional | Sets the network port used by the game. Default is 3724. |
