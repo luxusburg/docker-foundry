@@ -34,6 +34,9 @@ docker run -d \
     -v ./server:/mnt/foundry/server \
     -v ./data:/mnt/foundry/persistentdata \
     -e TZ=Europe/Paris \
+	-e SERVER_PWD=change_me
+	-e SERVER_NAME='Foundry docker by Luxusburg'
+	-e PAUSE_SERVER_WHEN_EMPTY=false
     luxusburg/docker-foundry:latest
 ```
 
@@ -45,7 +48,7 @@ docker run -d \
 Create a folder before executing the docker compose file
 
 > [!IMPORTANT]
-> Older docker compose version needs this line before the **services** line
+> Older docker compose version needs this line before the **services:** line
 >
 > version: '3'
 
@@ -57,6 +60,9 @@ services:
     network_mode: bridge
     environment:
       - TZ=Europe/Paris
+      - SERVER_PWD=change_me
+      - SERVER_NAME='Foundry docker by Luxusburg'
+      - PAUSE_SERVER_WHEN_EMPTY=false
     volumes:
       - './server:/mnt/foundry/server:rw'
       - './data:/mnt/foundry/persistentdata:rw'
@@ -64,3 +70,22 @@ services:
       - '3724:3724/udp'
       - '27015:27015/udp'
 ```
+
+## Environment variables
+
+You can use these environment variables for your docker container:
+
+| Variable | Key | Description |
+| -------------------- | ---------------------------- | ------------------------------------------------------------------------------- |
+| TZ | Europe/Paris | timezone |
+| WORLD_NAME | optional save name for map | Sets the server world name. This is the folder where the save files will be stored. |
+| SERVER_PWD | optional password | Sets the server password. |
+| PAUSE_SERVER_WHEN_EMPTY | optional: true or false  | Will the server pause when nobody is connected. |
+| AUTOSAVE_INTERVAL | optional in seconds | Sets the autosave frequency in seconds. |
+| SERVER_IS_PUBLIC | optional: true of false | Sets whether the server is listed on the Steam server browser. |
+| SERVER_PORT | optional | Sets the network port used by the game. Default is 3724. |
+| SERVER_QUERY_PORT | optional | Sets the network port used by the Steam server browser to query information about the game. This is only used if the server is set to public. Default is 27015. |
+| SERVER_NAME | optional | This is the name of the server listed in the Steam server browser. |
+| MAP_SEED | optional | Sets the map seed used to generate the world. |
+| SERVER_MAX_PLAYERS | optional | This sets the max amount of players on a server. |
+| CUSTOM_CONFIG | optional: true of false | Set this to true if the server should only accept you manual adapted app.cfg file |
