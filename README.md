@@ -34,9 +34,9 @@ docker run -d \
     -v ./server:/mnt/foundry/server \
     -v ./data:/mnt/foundry/persistentdata \
     -e TZ=Europe/Paris \
-	-e SERVER_PWD=change_me
-	-e SERVER_NAME='Foundry docker by Luxusburg'
-	-e PAUSE_SERVER_WHEN_EMPTY=false
+    -e SERVER_PWD=change_me
+    -e SERVER_NAME='Foundry docker by Luxusburg'
+    -e PAUSE_SERVER_WHEN_EMPTY=false
     luxusburg/docker-foundry:latest
 ```
 
