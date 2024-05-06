@@ -99,6 +99,6 @@ if [ ! -z $SERVER_MAX_PLAYERS ]; then
 	if grep -q "server_max_players" $APP_FILE; then
 	    sed -i '/server_max_players=/c server_max_players='$SERVER_MAX_PLAYERS $APP_FILE
 	else
-	    echo -e '\nserver_max_players='$SERVER_MAX_PLAYERS >> $APP_FILE
+	    echo -e '\nserver_max_players='$SERVER_MAX_PLAYERSg >> $APP_FILE
 	fi	
 fi
