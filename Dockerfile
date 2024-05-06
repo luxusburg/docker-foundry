@@ -33,5 +33,6 @@ RUN rm -rf /var/lib/apt/lists/* && \
 
 COPY ./files/start.sh /start.sh
 COPY ./files/app.cfg /home/steam/app.cfg
-RUN chmod +x /start.sh
+COPY ./files/env2cfg.sh /env2cfg.sh
+RUN chmod +x /start.sh /env2cfg.sh
 CMD ["/start.sh"]
