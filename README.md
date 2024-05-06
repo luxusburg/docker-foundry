@@ -34,7 +34,7 @@ To deploy this docker project run:
 ```bash
 docker run -d \
     --name foundry \
-    -p 3724:3724/upd \    
+    -p 3724:3724/udp \    
     -p 27015:27015/udp \
     -v ./server:/mnt/foundry/server \
     -v ./data:/mnt/foundry/persistentdata \
