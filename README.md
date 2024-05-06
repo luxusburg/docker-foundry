@@ -1,4 +1,4 @@
-# Docker for an Foundry dedicated server
+# Docker for a Foundry dedicated server
 [![Docker Pulls](https://img.shields.io/docker/pulls/luxusburg/docker-foundry)](https://hub.docker.com/r/luxusburg/docker-foundry)
 
 [![Image Size](https://img.shields.io/docker/image-size/luxusburg/docker-foundry/latest)](https://hub.docker.com/r/luxusburg/docker-foundry/tags)
@@ -11,12 +11,7 @@ This Docker container has been tested and will work on the following OS:
 
 - Linux (Ubuntu/Debian)
 
-> [!IMPORTANT]
-> On Steam Deck the game crashes or immidiatly discconects after connecting to the server
->
->Could also be for all Proton players?
-
-This is my first Docker image ever created I am always open for improving it! 
+This is my first Docker image ever created I am always open to improving it! 
 
 > [!TIP]
 > Don't forget to change the values in ./server/app.cfg file that's where you can change the password of the server
@@ -26,7 +21,7 @@ This is my first Docker image ever created I am always open for improving it!
 
 **This will create the folders './server' and './data' in your current folder where you execute the code**
 
-**Recommandation:**
+**Recommendation:**
 Create a folder before executing this docker command
 
 To deploy this docker project run:
@@ -42,12 +37,17 @@ docker run -d \
     luxusburg/docker-foundry:latest
 ```
 
-## Docker combose Deployment
+## Docker compose Deployment
 
 **This will create the folders './server' and './data' in your current folder where you execute combose file**
 
-**Recommandation:**
-Create a folder before executing the docker combose file
+**Recommendation:**
+Create a folder before executing the docker compose file
+
+> [!IMPORTANT]
+> Older docker compose version needs this line before the **services** line
+>
+> version: '3'
 
 ```yml
 services:
