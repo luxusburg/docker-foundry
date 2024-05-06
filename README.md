@@ -62,5 +62,5 @@ services:
       - './data:/mnt/foundry/persistentdata:rw'
     ports:
       - '3724:3724/udp'
-      - '27015:27015/udp
+      - '27015:27015/udp'
 ```
