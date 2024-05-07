@@ -31,6 +31,11 @@ else
     source ./env2cfg.sh
 fi
 
+echo " "
+echo "Cleaning possible X11 leftovers"
+echo " "
+rm /tmp/.X0-lock
+
 cd "$server_files"
 echo "Starting Foundry Dedicated Server"
 echo " "
