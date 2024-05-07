@@ -14,8 +14,10 @@ This Docker container has been tested and will work on the following OS:
 This is my first Docker image ever created I am always open to improving it! 
 
 > [!TIP]
-> Don't forget to change the values in ./server/app.cfg file that's where you can change the password of the server
-> [Link](https://dedicated.foundry-game.com/) from the devs what you can change in that file
+> Add environment variables so that you can for example change the password of the server
+> On the bottom you will find a list of all environment variables to change, if you want to use your own app.cfg file
+> set the CUSTOM_CONFIG to true
+> Here are all the possible changes from the devs [link](https://dedicated.foundry-game.com/) 
 
 ## Docker Run
 
