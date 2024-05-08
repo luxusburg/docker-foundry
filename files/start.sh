@@ -31,6 +31,11 @@ else
     source ./env2cfg.sh
 fi
 
+echo " "
+echo "Cleaning possible X11 leftovers"
+echo " "
+rm /tmp/.X0-lock
+
 cd "$server_files"
 echo "Starting Foundry Dedicated Server"
 echo " "
@@ -46,4 +51,3 @@ DISPLAY=:0.0 wine /mnt/foundry/server/FoundryDedicatedServer.exe -log 2>&1
 
 # make sure Xvfb process will be stopped and remove lock
 kill $XVFB_PID
-rm /tmp/.X0-lock
