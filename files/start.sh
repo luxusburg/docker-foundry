@@ -31,11 +31,24 @@ else
     source ./env2cfg.sh
 fi
 
+echo " "
+echo "Cleaning possible X11 leftovers"
+echo " "
+rm /tmp/.X0-lock
+rm -r /tmp/*
+
 cd "$server_files"
 echo "Starting Foundry Dedicated Server"
 echo " "
 echo "Starting Xvfb"
 Xvfb :0 -screen 0 640x480x24:32 &
+
+# save PID of Xvfb process for clean shutdown
+XVFB_PID=$!
+
 echo "Launching wine Foundry"
 echo " "
 DISPLAY=:0.0 wine /mnt/foundry/server/FoundryDedicatedServer.exe -log 2>&1
+
+# make sure Xvfb process will be stopped and remove lock
+kill $XVFB_PID
