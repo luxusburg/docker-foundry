@@ -35,6 +35,7 @@ echo " "
 echo "Cleaning possible X11 leftovers"
 echo " "
 rm /tmp/.X0-lock
+rm -r /tmp/*
 
 cd "$server_files"
 echo "Starting Foundry Dedicated Server"
