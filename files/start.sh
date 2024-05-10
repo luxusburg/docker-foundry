@@ -27,7 +27,7 @@ else
     # For the docker image save files to work, the persistent data folder can not be changed in app.cfg
     echo "Setting persistent data folder in app.cfg for the image to work correctly"
     if grep -q "server_persistent_data_override_folder" $server_files/app.cfg; then
-        sed -i "/server_persistent_data_override_folder=/c server_persistent_data_override_folder=/mnt/foundry/persistentdata"
+        sed -i "/server_persistent_data_override_folder=/c server_persistent_data_override_folder=/mnt/foundry/persistentdata" $server_files/app.cfg
     else
         echo -ne '\nserver_persistent_data_override_folder=/mnt/foundry/persistentdata' >> $server_files/app.cfg
     fi
