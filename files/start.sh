@@ -47,7 +47,7 @@ if [ ! -z $BACKUPS ]; then
         echo " "
     fi
 fi
-if [ ! -z $BACKUP_INTERVAL ]; then
+if [ ! -z "$BACKUP_INTERVAL" ]; then
     echo "Changing backup interval to $BACKUP_INTERVAL"
     sed -i "/backup.sh/c $BACKUP_INTERVAL /backup.sh 2>&1" /etc/cron.d/foundry-cron
     echo " "
