@@ -31,7 +31,7 @@ if [ ! -z $CUSTOM_CONFIG ]; then
 	    echo "Not changing app.cfg file"
 	else
 	    echo "Running setup script for the app.cfg file"
-        source ./env2cfg.sh
+            source ./env2cfg.sh
 	fi
     
 else
@@ -45,7 +45,7 @@ if [ ! -z $BACKUPS ]; then
         echo "[IMPORTANT] Backups are disabled!"
         sed -i "/backup.sh/c # 0 * * * * /backup.sh 2>&1" /etc/cron.d/foundry-cron
         echo " "
-	fi
+    fi
 fi
 if [ ! -z $BACKUP_INTERVAL ]; then
     echo "Changing backup interval to $BACKUP_INTERVAL"
