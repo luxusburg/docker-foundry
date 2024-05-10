@@ -29,7 +29,7 @@ else
     if grep -q "server_persistent_data_override_folder" $server_files/app.cfg; then
         sed -i "/server_persistent_data_override_folder=/c server_persistent_data_override_folder=/mnt/foundry/persistentdata"
     else
-        echo -e '\n/server_persistent_data_override_folder=/mnt/foundry/persistentdata' >> $server_files/app.cfg
+        echo -e '\nserver_persistent_data_override_folder=/mnt/foundry/persistentdata' >> $server_files/app.cfg
     fi
 fi
 echo " "
