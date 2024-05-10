@@ -7,8 +7,8 @@ RUN apt update -y && \
     apt-get upgrade -y && \
     apt-get install -y  apt-utils && \
     apt-get install -y  software-properties-common \
-                        tzdata && \
-                        cron && \
+                        tzdata \
+						cron && \
     add-apt-repository multiverse && \
     dpkg --add-architecture i386 && \
     apt update -y && \
