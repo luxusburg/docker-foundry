@@ -17,6 +17,7 @@ RUN apt update -y && \
 # Setting up cron file for backup
 ADD ./files/foundry-cron /etc/cron.d/foundry-cron
 RUN chmod 0644 /etc/cron.d/foundry-cron
+RUN crontab /etc/cron.d/foundry-cron
 
 # Install steamcmd and create user
 RUN useradd -m steam && cd /home/steam && \
