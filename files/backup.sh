@@ -1,8 +1,8 @@
 #!/bin/bash
 # Backup for the game save files.
 
-# Location of save files.
-save_files_to_backup="/mnt/foundry/persistentdata/save/ /mnt/foundry/persistentdata/continue_game.json"
+# Location of save directory.
+loc_dir="/mnt/foundry/persistentdata/"
 # Location of backup folder.
 backup_folder="/mnt/foundry/persistentdata/backup"
 # Setting backup retention to a default value when it is not set
@@ -37,7 +37,7 @@ echo "Backing up current save files to $backup_folder/$archive_file"
 date
 echo " "
 
-tar -czvf $backup_folder/$archive_file $save_files_to_backup
+tar -czvf $backup_folder/$archive_file -C $loc_dir save/ continue_game.json
 
 echo " "
 echo "Backup finished"
