@@ -73,6 +73,20 @@ services:
       - '27015:27015/udp'
 ```
 
+## Backup & recovery
+
+Backups are all saved in the folder you set in your volume for `/location/of/folder:/mnt/foundry/persistentdata`
+There should be a folder in it called `backup`.
+
+Per Default backups are activated and done every hour of the day you can change this by looking at the environment variables further below.
+
+> [!IMPORTANT]
+> This command will overwrite your current save files! **Copy/backup the files before overwriting them!**
+
+If you want to recover a backup you need to stop the container and unzip the files into your folder `/location/of/folder` with this command for example
+`tar -xzvf /location/of/folder/backup/foundry-backup-DATE_AND_TIME_OF_BACKUP_YOU_WANT_TO_USE.tar.gz -C /location/of/folder/`
+
+
 ## Environment variables Game settings
 
 You can use these environment variables for your game settings:
