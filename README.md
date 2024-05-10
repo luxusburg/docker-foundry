@@ -73,9 +73,23 @@ services:
       - '27015:27015/udp'
 ```
 
-## Environment variables
+## Backup & recovery
 
-You can use these environment variables for your docker container:
+Backups are all saved in the folder you set in your volume for `/location/of/folder:/mnt/foundry/persistentdata`
+There should be a folder in it called `backup`.
+
+Per Default backups are activated and done every hour of the day you can change this by looking at the environment variables further below.
+
+> [!IMPORTANT]
+> This command will overwrite your current save files! **Copy/backup the files before overwriting them!**
+
+If you want to recover a backup you need to stop the container and unzip the files into your folder `/location/of/folder` with this command for example
+`tar -xzvf /location/of/folder/backup/foundry-backup-DATE_AND_TIME_OF_BACKUP_YOU_WANT_TO_USE.tar.gz -C /location/of/folder/`
+
+
+## Environment variables Game settings
+
+You can use these environment variables for your game settings:
 
 | Variable | Key | Description |
 | -------------------- | ---------------------------- | ------------------------------------------------------------------------------- |
@@ -90,4 +104,16 @@ You can use these environment variables for your docker container:
 | SERVER_NAME | optional | This is the name of the server listed in the Steam server browser. |
 | MAP_SEED | optional | Sets the map seed used to generate the world. |
 | SERVER_MAX_PLAYERS | optional | This sets the max amount of players on a server. |
+| MAX_TRANSFER_RATE | optional default: 1024 max: 8192 | Change transfer rate of the server data |
 | CUSTOM_CONFIG | optional: true of false | Set this to true if the server should only accept you manual adapted app.cfg file |
+
+## Environment variables Backup settings
+
+> [!WARNING]
+> For BACKUP_INTERVAL **do not set double or single quotes** :  `""` or `''`
+
+| Variable | Key | Description |
+| -------------------- | ---------------------------- | ------------------------------------------------------------------------------- |
+| BACKUPS | true (default) or false | Activate backups |
+| BACKUP_INTERVAL | default: 0 * * * * | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) value for the backups |
+| BACKUP_RETENTION | default: 30 min: 1 |Sets how many days the backups should be kept |

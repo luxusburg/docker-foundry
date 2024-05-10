@@ -1,0 +1,4 @@
+# Cron file for Foundry backup of safe files
+# Default is 0 * * * *  backup happens every hour
+0 * * * * /backup.sh 2>&1
+# Don't remove the empty line at the end of this file. It is required to run the cron job
