@@ -36,7 +36,7 @@ echo " "
 
 echo "Checking if CUSTOM_CONFIG env is set and if set to true:"
 if [ ! -z $CUSTOM_CONFIG ]; then
-    if [$CUSTOM_CONFIG = true];then
+    if [ $CUSTOM_CONFIG = true ];then
 	    echo "Not changing app.cfg file"
 	else
 	    echo "Running setup script for the app.cfg file"

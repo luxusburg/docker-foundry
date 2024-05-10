@@ -85,10 +85,10 @@ if [ ! -z $MAP_SEED ]; then
 	fi	
 fi
 
-if [ ! -z $SERVER_NAME ]; then
+if [ ! -z "$SERVER_NAME" ]; then
     echo "Server name set to: $SERVER_NAME"
 	if grep -q "server_name" $APP_FILE; then
-	    sed -i '/server_name=/c server_name='$SERVER_NAME $APP_FILE
+	    sed -i "/server_name=/c server_name=$SERVER_NAME" $APP_FILE
 	else
 	    echo -ne '\nserver_name='$SERVER_NAME >> $APP_FILE
 	fi	
