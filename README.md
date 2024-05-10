@@ -109,6 +109,9 @@ You can use these environment variables for your game settings:
 
 ## Environment variables Backup settings
 
+> [!WARNING]
+> For BACKUP_INTERVAL **do not set double or single quotes** :  `""` or `''`
+
 | Variable | Key | Description |
 | -------------------- | ---------------------------- | ------------------------------------------------------------------------------- |
 | BACKUPS | true (default) or false | Activate backups |
