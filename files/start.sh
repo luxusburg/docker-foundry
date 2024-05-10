@@ -43,14 +43,14 @@ echo " "
 if [ ! -z $BACKUPS ]; then
     if [ $BACKUPS = false ]; then
         echo "[IMPORTANT] Backups are disabled!"
-        sed -i "/backup.sh/c # 0 * * * * /backup.sh 2>&1" /etc/cron.d/foundry-cron		
-		echo " "
+        sed -i "/backup.sh/c # 0 * * * * /backup.sh 2>&1" /etc/cron.d/foundry-cron
+        echo " "
 	fi
 fi
 if [ ! -z $BACKUP_INTERVAL ]; then
     echo "Changing backup interval to $BACKUP_INTERVAL"
-	sed -i "/backup.sh/c $BACKUP_INTERVAL /backup.sh 2>&1" /etc/cron.d/foundry-cron
-	echo " "
+    sed -i "/backup.sh/c $BACKUP_INTERVAL /backup.sh 2>&1" /etc/cron.d/foundry-cron
+    echo " "
 fi
 
 echo " "
