@@ -73,9 +73,9 @@ services:
       - '27015:27015/udp'
 ```
 
-## Environment variables
+## Environment variables Game settings
 
-You can use these environment variables for your docker container:
+You can use these environment variables for your game settings:
 
 | Variable | Key | Description |
 | -------------------- | ---------------------------- | ------------------------------------------------------------------------------- |
@@ -90,4 +90,13 @@ You can use these environment variables for your docker container:
 | SERVER_NAME | optional | This is the name of the server listed in the Steam server browser. |
 | MAP_SEED | optional | Sets the map seed used to generate the world. |
 | SERVER_MAX_PLAYERS | optional | This sets the max amount of players on a server. |
+| MAX_TRANSFER_RATE | optional default: 1024 max: 8192 | Change transfer rate of the server data |
 | CUSTOM_CONFIG | optional: true of false | Set this to true if the server should only accept you manual adapted app.cfg file |
+
+## Environment variables Backup settings
+
+| Variable | Key | Description |
+| -------------------- | ---------------------------- | ------------------------------------------------------------------------------- |
+| BACKUPS | true (default) or false | Activate backups |
+| BACKUP_INTERVAL | default: 0 * * * * | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) value for the backups |
+| BACKUP_RETENTION | default: 30 min: 1 |Sets how many days the backups should be kept |
