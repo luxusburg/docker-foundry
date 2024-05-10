@@ -8,6 +8,7 @@ echo "Setting time zone to $TZ"
 echo $TZ > /etc/timezone 2>&1
 ln -snf /usr/share/zoneinfo/$TZ /etc/localtime 2>&1
 dpkg-reconfigure -f noninteractive tzdata 2>&1
+cron
 
 mkdir -p /root/.steam 2>/dev/null
 chmod -R 777 /root/.steam 2>/dev/null
@@ -43,13 +44,13 @@ echo " "
 if [ ! -z $BACKUPS ]; then
     if [ $BACKUPS = false ]; then
         echo "[IMPORTANT] Backups are disabled!"
-        sed -i "/backup.sh/c # 0 * * * * /backup.sh 2>&1" /etc/cron.d/foundry-cron
+        sed -i "/backup.sh/c # 0 * * * * /backup.sh 2>&1" /var/spool/cron/crontabs/root
         echo " "
     fi
 fi
 if [ ! -z "$BACKUP_INTERVAL" ]; then
     echo "Changing backup interval to $BACKUP_INTERVAL"
-    sed -i "/backup.sh/c $BACKUP_INTERVAL /backup.sh 2>&1" /etc/cron.d/foundry-cron
+    sed -i "/backup.sh/c $BACKUP_INTERVAL /backup.sh 2>&1" /var/spool/cron/crontabs/root
     echo " "
 fi
 
