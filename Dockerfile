@@ -11,7 +11,7 @@ RUN apt-get update -y && \
         tzdata \
         wget \
         cron && \        
-    apt-get autoremove --purge &&
+    apt-get autoremove --purge && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
