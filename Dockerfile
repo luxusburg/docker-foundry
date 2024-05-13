@@ -1,49 +1,57 @@
-FROM ubuntu:22.04 
-LABEL maintainer="Git@Luxusburg"
-VOLUME ["/mnt/foundry/server", "/mnt/foundry/persistentdata"]
+FROM steamcmd/steamcmd:debian-12@sha256:7794691703019cc2deba56303f76bc4cc65efdce1165b3f3ce4b9b1cc88defa9
+LABEL maintainer="git@luxusburg.lu"
 
 ARG DEBIAN_FRONTEND="noninteractive"
-RUN apt update -y && \
+
+RUN apt-get update -y && \
     apt-get upgrade -y && \
-    apt-get install -y  apt-utils && \
-    apt-get install -y  software-properties-common \
-                        tzdata \
-                        cron && \
-    add-apt-repository multiverse && \
-    dpkg --add-architecture i386 && \
-    apt update -y && \
-    apt-get upgrade -y 
+    apt-get install -y  \
+        apt-utils \
+        software-properties-common \
+        tzdata \
+        wget \
+        cron && \        
+    apt-get autoremove --purge &&
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Setting timezone
+ln -snf /usr/share/zoneinfo/${TZ:-'Europe/Berlin'} /etc/localtime
+dpkg-reconfigure -f noninteractive tzdata
 
 # Setting up cron file for backup
 ADD ./files/foundry-cron /etc/cron.d/foundry-cron
 RUN chmod 0644 /etc/cron.d/foundry-cron
 RUN crontab /etc/cron.d/foundry-cron
-
-# Install steamcmd and create user
-RUN useradd -m steam && cd /home/steam && \
-    echo steam steam/question select "I AGREE" | debconf-set-selections && \
-    echo steam steam/license note '' | debconf-set-selections && \
-    apt purge steam steamcmd && \
-    apt install -y gdebi-core  \
-                   libgl1-mesa-glx:i386 \
-                   wget && \
-    apt install -y steam \
-                   steamcmd && \
-    ln -s /usr/games/steamcmd /usr/bin/steamcmd
+RUN cron
 
 # Install wine
-RUN apt install -y wine \
-                   winbind
-RUN apt install -y xserver-xorg \
+RUN mkdir -pm755 /etc/apt/keyrings && \
+    wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key && \
+    wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/debian/dists/bookworm/winehq-bookworm.sources && \
+    apt-get update && \
+    apt-get install -y --install-recommends winehq-stable
+
+# Install xvfb
+RUN apt-get install -y xserver-xorg \
                    xvfb
-RUN rm -rf /var/lib/apt/lists/* && \
-    apt clean && \
-    apt autoremove -y
+
+# Clean up
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*  && \    
+    apt-get clean && \
+    apt-get autoremove -y
+
+# Create user foundry and home directory
+RUN groupadd -g "${PGID:-1000}" -o foundry && \
+    useradd -g "${PGID:-1000}" -u "${PGUID:-1000}" -o --create-home foundry && \
+
 
 # Copy batch files and give execute rights
-COPY ./files/start.sh /start.sh
-COPY ./files/app.cfg /home/steam/app.cfg
-COPY ./files/env2cfg.sh /env2cfg.sh
-COPY ./files/backup.sh /backup.sh
-RUN chmod +x /start.sh /env2cfg.sh /backup.sh
-CMD ["/start.sh"]
+WORKDIR /home/foundry
+COPY ./files/start.sh ./scripts/start.sh
+COPY ./files/app.cfg ./scripts/app.cfg
+COPY ./files/env2cfg.sh ./scripts/env2cfg.sh
+COPY ./files/backup.sh ./scripts/backup.sh
+RUN chmod +x ./scripts/*.sh
+
+CMD ["/bin/bash", "./start.sh"]

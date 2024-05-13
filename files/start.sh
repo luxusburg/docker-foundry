@@ -1,35 +1,34 @@
 #!/bin/bash
 # Location of server data and save data for docker
 
-server_files=/mnt/foundry/server
-persistent_data=/mnt/foundry/persistentdata
+server_files=/home/foundry/server_files
+persistent_data=/home/foundry/persistent_data
 
-echo "Setting time zone to $TZ"
-echo $TZ > /etc/timezone 2>&1
-ln -snf /usr/share/zoneinfo/$TZ /etc/localtime 2>&1
-dpkg-reconfigure -f noninteractive tzdata 2>&1
-cron
+echo " "
+echo "Server files location is set to : $server_files"
+echo "Save files locaiton is set to : $persistent_data"
+echo " "
 
 mkdir -p /root/.steam 2>/dev/null
 chmod -R 777 /root/.steam 2>/dev/null
 echo " "
 echo "Updating Foundry Dedicated Server files..."
 echo " "
-/usr/bin/steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir "$server_files" +login anonymous +app_update 2915550 validate +quit
+steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir "$server_files" +login anonymous +app_update 2915550 validate +quit
 echo "steam_appid: "`cat $server_files/steam_appid.txt`
 echo " "
 
 echo "Checking if app.cfg files exists and no env virables were set"
 if [ ! -f "$server_files/app.cfg" ]; then
     echo "$server_files/app.cfg not found. Copying default file."
-    cp "/home/steam/app.cfg" "$server_files/" 2>&1
+    cp "/home/foundry/scripts/app.cfg" "$server_files/" 2>&1
 else
     # For the docker image save files to work, the persistent data folder can not be changed in app.cfg
     echo "Setting persistent data folder in app.cfg for the image to work correctly"
     if grep -q "server_persistent_data_override_folder" $server_files/app.cfg; then
-        sed -i "/server_persistent_data_override_folder=/c server_persistent_data_override_folder=/mnt/foundry/persistentdata" $server_files/app.cfg
+        sed -i "/server_persistent_data_override_folder=/c server_persistent_data_override_folder=/home/foundry/persistentdata" $server_files/app.cfg
     else
-        echo -ne '\nserver_persistent_data_override_folder=/mnt/foundry/persistentdata' >> $server_files/app.cfg
+        echo -ne '\nserver_persistent_data_override_folder=/home/foundry/persistentdata' >> $server_files/app.cfg
     fi
 fi
 echo " "
@@ -52,7 +51,7 @@ echo " "
 if [ ! -z $BACKUPS ]; then
     if [ $BACKUPS = false ]; then
         echo "[IMPORTANT] Backups are disabled!"
-        sed -i "/backup.sh/c # 0 * * * * /backup.sh 2>&1" /var/spool/cron/crontabs/root
+        sed -i "/backup.sh/c # 0 * * * * /backup.sh 2>&1" /var/spool/cron/crontabs/foundry
         echo " "
     fi
 fi
@@ -61,7 +60,7 @@ if [ ! -z "$BACKUP_INTERVAL" ]; then
         echo "[IMPORTANT] Backups are disabled ignoring BACKUP_INTERVAL!"
     else
         echo "Changing backup interval to $BACKUP_INTERVAL"
-        sed -i "/backup.sh/c $BACKUP_INTERVAL /backup.sh 2>&1" /var/spool/cron/crontabs/root
+        sed -i "/backup.sh/c $BACKUP_INTERVAL /backup.sh 2>&1" /var/spool/cron/crontabs/foundry
         echo " "
     fi    
 fi
@@ -83,7 +82,7 @@ XVFB_PID=$!
 
 echo "Launching wine Foundry"
 echo " "
-DISPLAY=:0.0 wine /mnt/foundry/server/FoundryDedicatedServer.exe -log 2>&1
+DISPLAY=:0.0 wine $server_files/FoundryDedicatedServer.exe -log 2>&1
 
 # make sure Xvfb process will be stopped and remove lock
 kill $XVFB_PID
