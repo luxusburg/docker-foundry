@@ -12,7 +12,7 @@ RUN apt-get update -y && \
         wget \
         cron && \        
     apt-get autoremove --purge &&
-    apt clean && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Setting timezone
@@ -38,7 +38,7 @@ RUN apt-get install -y xserver-xorg \
 
 # Clean up
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*  && \    
-    apt clean && \
+    apt-get clean && \
     apt-get autoremove -y
 
 # Create user foundry and home directory
