@@ -42,7 +42,7 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*  && \
     apt-get autoremove -y
 
 # Create user foundry and home directory
-RUN groupadd -g "${PGID:-1000}" -o foundry
+RUN groupadd -g "${PGID:-1000}" -o foundry && \
     useradd -g "${PGID:-1000}" -u "${PGUID:-1000}" -o --create-home foundry
 
 
