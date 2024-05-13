@@ -16,8 +16,8 @@ RUN apt-get update -y && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Setting timezone
-ln -snf /usr/share/zoneinfo/${TZ:-'Europe/Berlin'} /etc/localtime
-dpkg-reconfigure -f noninteractive tzdata
+RUN ln -snf /usr/share/zoneinfo/${TZ:-'Europe/Berlin'} /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata
 
 # Setting up cron file for backup
 ADD ./files/foundry-cron /etc/cron.d/foundry-cron
