@@ -53,5 +53,8 @@ COPY ./files/app.cfg ./scripts/app.cfg
 COPY ./files/env2cfg.sh ./scripts/env2cfg.sh
 COPY ./files/backup.sh ./scripts/backup.sh
 RUN chmod +x ./scripts/*.sh
+RUN chown foundry:foundry ./scripts/*
+
+USER foundry
 
 CMD ["/bin/bash", "./start.sh"]
