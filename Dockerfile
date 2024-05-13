@@ -1,32 +1,18 @@
-FROM ubuntu:22.04
+FROM ubuntu:22.04 
 LABEL maintainer="Git@Luxusburg"
-# VOLUME ["/app/serverfiles", "/app/data"]
-
-WORKDIR /app
+VOLUME ["/mnt/foundry/server", "/mnt/foundry/persistentdata"]
 
 ARG DEBIAN_FRONTEND="noninteractive"
-ARG PUID=1000
-
-ENV USER steam
-ENV HOMEDIR "/home/${USER}"
-ENV STEAMCMDDIR "${HOMEDIR}/steamcmd"
-
 RUN apt update -y && \
     apt-get upgrade -y && \
     apt-get install -y  apt-utils && \
     apt-get install -y  software-properties-common \
                         tzdata \
-                        cron \
-                        locales && \
+                        cron && \
     add-apt-repository multiverse && \
     dpkg --add-architecture i386 && \
     apt update -y && \
-    apt-get upgrade -y
-
-RUN locale-gen en_US.UTF-8
-
-ENV LANG=en_US.UTF-8
-ENV LANGUAGE=en_US:en
+    apt-get upgrade -y 
 
 # Setting up cron file for backup
 ADD ./files/foundry-cron /etc/cron.d/foundry-cron
@@ -34,7 +20,7 @@ RUN chmod 0644 /etc/cron.d/foundry-cron
 RUN crontab /etc/cron.d/foundry-cron
 
 # Install steamcmd and create user
-RUN useradd -u "${PUID}" -m "${USER}" && cd /home/steam && \
+RUN useradd -m steam && cd /home/steam && \
     echo steam steam/question select "I AGREE" | debconf-set-selections && \
     echo steam steam/license note '' | debconf-set-selections && \
     apt purge steam steamcmd && \
@@ -55,12 +41,9 @@ RUN rm -rf /var/lib/apt/lists/* && \
     apt autoremove -y
 
 # Copy batch files and give execute rights
-COPY ./files/start.sh /app/start.sh
+COPY ./files/start.sh /start.sh
 COPY ./files/app.cfg /home/steam/app.cfg
-COPY ./files/env2cfg.sh /app/env2cfg.sh
-COPY ./files/backup.sh /app/backup.sh
-RUN mkdir -p serverfiles data
-RUN chown -R steam:steam /app
-RUN chmod +x /app/start.sh /app/env2cfg.sh /app/backup.sh
-USER ${USER}
-CMD ["/usr/bin/bash", "./start.sh", "cron"]
+COPY ./files/env2cfg.sh /env2cfg.sh
+COPY ./files/backup.sh /backup.sh
+RUN chmod +x /start.sh /env2cfg.sh /backup.sh
+CMD ["/start.sh"]
