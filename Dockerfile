@@ -1,4 +1,4 @@
-FROM steamcmd/steamcmd:debian-12@sha256:7794691703019cc2deba56303f76bc4cc65efdce1165b3f3ce4b9b1cc88defa9
+FROM steamcmd/steamcmd:debian-12
 LABEL maintainer="git@luxusburg.lu"
 
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -52,9 +52,9 @@ COPY ./files/start.sh ./scripts/start.sh
 COPY ./files/app.cfg ./scripts/app.cfg
 COPY ./files/env2cfg.sh ./scripts/env2cfg.sh
 COPY ./files/backup.sh ./scripts/backup.sh
+COPY ./files/entrypoint.sh ./scripts/entrypoint.sh
 RUN chmod +x ./scripts/*.sh
 RUN chown foundry:foundry ./scripts/*
 
-USER foundry
-
-CMD ["/bin/bash", "./start.sh"]
+ENTRYPOINT ["/bin/bash", "/home/foundry/scripts/entrypoint.sh"]
+CMD ["/home/foundry/scripts/start.sh"]

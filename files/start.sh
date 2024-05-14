@@ -26,9 +26,9 @@ else
     # For the docker image save files to work, the persistent data folder can not be changed in app.cfg
     echo "Setting persistent data folder in app.cfg for the image to work correctly"
     if grep -q "server_persistent_data_override_folder" $server_files/app.cfg; then
-        sed -i "/server_persistent_data_override_folder=/c server_persistent_data_override_folder=/home/foundry/persistentdata" $server_files/app.cfg
+        sed -i "/server_persistent_data_override_folder=/c server_persistent_data_override_folder=/home/foundry/persistent_data" $server_files/app.cfg
     else
-        echo -ne '\nserver_persistent_data_override_folder=/home/foundry/persistentdata' >> $server_files/app.cfg
+        echo -ne '\nserver_persistent_data_override_folder=/home/foundry/persistent_data' >> $server_files/app.cfg
     fi
 fi
 echo " "
@@ -39,19 +39,19 @@ if [ ! -z $CUSTOM_CONFIG ]; then
 	    echo "Not changing app.cfg file"
 	else
 	    echo "Running setup script for the app.cfg file"
-            source ./env2cfg.sh
+            source ./scripts/env2cfg.sh
 	fi
     
 else
     echo "Running setup script for the app.cfg file"
-    source ./env2cfg.sh
+    source ./scripts/env2cfg.sh
 fi
 
 echo " "
 if [ ! -z $BACKUPS ]; then
     if [ $BACKUPS = false ]; then
         echo "[IMPORTANT] Backups are disabled!"
-        sed -i "/backup.sh/c # 0 * * * * /backup.sh 2>&1" /var/spool/cron/crontabs/foundry
+        sed -i "/backup.sh/c # 0 * * * * /backup.sh 2>&1" /var/spool/cron/crontabs/root
         echo " "
     fi
 fi
@@ -60,7 +60,7 @@ if [ ! -z "$BACKUP_INTERVAL" ]; then
         echo "[IMPORTANT] Backups are disabled ignoring BACKUP_INTERVAL!"
     else
         echo "Changing backup interval to $BACKUP_INTERVAL"
-        sed -i "/backup.sh/c $BACKUP_INTERVAL /backup.sh 2>&1" /var/spool/cron/crontabs/foundry
+        sed -i "/backup.sh/c $BACKUP_INTERVAL /backup.sh 2>&1" /var/spool/cron/crontabs/root
         echo " "
     fi    
 fi
@@ -75,7 +75,7 @@ cd "$server_files"
 echo "Starting Foundry Dedicated Server"
 echo " "
 echo "Starting Xvfb"
-Xvfb :0 -screen 0 640x480x24:32 &
+Xvfb :0 -screen 0 640x480x24:32 -nolisten tcp -nolisten unix &
 
 # save PID of Xvfb process for clean shutdown
 XVFB_PID=$!
