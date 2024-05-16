@@ -74,15 +74,15 @@ rm -r /tmp/*
 cd "$server_files"
 echo "Starting Foundry Dedicated Server"
 echo " "
-echo "Starting Xvfb"
-Xvfb :0 -screen 0 640x480x24:32 -nolisten tcp -nolisten unix &
+#echo "Starting Xvfb"
+#Xvfb :0 -screen 0 640x480x24:32 -nolisten tcp -nolisten unix &
 
 # save PID of Xvfb process for clean shutdown
-XVFB_PID=$!
+#XVFB_PID=$!
 
 echo "Launching wine Foundry"
 echo " "
-DISPLAY=:0.0 wine $server_files/FoundryDedicatedServer.exe -log 2>&1
+xvfb-run wine $server_files/FoundryDedicatedServer.exe -log 2>&1
 
 # make sure Xvfb process will be stopped and remove lock
-kill $XVFB_PID
+#kill $XVFB_PID

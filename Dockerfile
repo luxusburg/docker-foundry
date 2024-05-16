@@ -1,60 +1,38 @@
-FROM steamcmd/steamcmd:debian-12
+FROM steamcmd/steamcmd:alpine
 LABEL maintainer="git@luxusburg.lu"
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
-RUN apt-get update -y && \
-    apt-get upgrade -y && \
-    apt-get install -y  \
-        apt-utils \
-        software-properties-common \
-        tzdata \
-        wget \
-        cron && \        
-    apt-get autoremove --purge && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+VOLUME ["/home/foundry/server_files", "/home/foundry/persistent_data"]
 
-# Setting timezone
-RUN ln -snf /usr/share/zoneinfo/${TZ:-'Europe/Berlin'} /etc/localtime && \
-    dpkg-reconfigure -f noninteractive tzdata
-
-# Setting up cron file for backup
-ADD ./files/foundry-cron /etc/cron.d/foundry-cron
-RUN chmod 0644 /etc/cron.d/foundry-cron
-RUN crontab /etc/cron.d/foundry-cron
-RUN cron
+# Set environment variables
+ENV USER foundry
+ENV HOME /home/$USER
+ENV TZ 'Europe/Berlin'
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
 
 # Install wine
-RUN mkdir -pm755 /etc/apt/keyrings && \
-    wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key && \
-    wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/debian/dists/bookworm/winehq-bookworm.sources && \
-    apt-get update && \
-    apt-get install -y --install-recommends winehq-stable
+RUN apk add --no-cache wine xvfb xvfb-run doas tzdata musl musl-utils musl-locales libgcc
 
-# Install xvfb
-RUN apt-get install -y xserver-xorg \
-                   xvfb
+RUN echo 'export LC_ALL=$LC_ALL' >> /etc/profile.d/locale.sh && \
+  sed -i 's|LANG=C.UTF-8|LANG=$LANG|' /etc/profile.d/locale.sh
 
-# Clean up
-RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*  && \    
-    apt-get clean && \
-    apt-get autoremove -y
+RUN ln -s /usr/lib/libgcc_s.so.1 /usr/lib/wine/x86_64-unix/
+# add new user
+RUN adduser -D $USER 
 
-# Create user foundry and home directory
-RUN groupadd -g "${PGID:-1000}" -o foundry && \
-    useradd -g "${PGID:-1000}" -u "${PGUID:-1000}" -o --create-home foundry
+RUN echo "permit nopass $USER as root" > /etc/doas.conf
 
+
+USER $USER
+WORKDIR $HOME
 
 # Copy batch files and give execute rights
-WORKDIR /home/foundry
-COPY ./files/start.sh ./scripts/start.sh
-COPY ./files/app.cfg ./scripts/app.cfg
-COPY ./files/env2cfg.sh ./scripts/env2cfg.sh
-COPY ./files/backup.sh ./scripts/backup.sh
-COPY ./files/entrypoint.sh ./scripts/entrypoint.sh
-RUN chmod +x ./scripts/*.sh
-RUN chown foundry:foundry ./scripts/*
+ADD --chown=$USER:$USER ./files $HOME/scripts
+RUN chmod +x $HOME/scripts/*.sh
 
+#USER $USER
 ENTRYPOINT ["/bin/bash", "/home/foundry/scripts/entrypoint.sh"]
 CMD ["/home/foundry/scripts/start.sh"]
+#CMD ["bash"]
