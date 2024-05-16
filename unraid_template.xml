@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>Foundry</Name>
+  <Repository>luxusburg/docker-foundry:latest</Repository>
+  <Registry>https://hub.docker.com/r/luxusburg/docker-foundry</Registry>
+  <Network>bridge</Network>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support/>
+  <Project>https://github.com/luxusburg/docker-foundry</Project>
+  <Overview># Docker for a Foundry dedicated server&#xD;
+[![Docker Pulls](https://img.shields.io/docker/pulls/luxusburg/docker-foundry)](https://hub.docker.com/r/luxusburg/docker-foundry)&#xD;
+&#xD;
+[![Image Size](https://img.shields.io/docker/image-size/luxusburg/docker-foundry/latest)](https://hub.docker.com/r/luxusburg/docker-foundry/tags)&#xD;
+&#xD;
+[![Docker Hub](https://img.shields.io/badge/Docker_Hub-foundry-blue?logo=docker)](https://hub.docker.com/r/luxusburg/docker-foundry)&#xD;
+&#xD;
+This is a Docker container to help you get started with hosting your own [Foundry](https://www.paradoxinteractive.com/games/foundry/about) dedicated server.&#xD;
+&#xD;
+This Docker container has been tested and will work on the following OS:&#xD;
+&#xD;
+- Linux (Ubuntu/Debian)&#xD;
+&#xD;
+This is my first Docker image ever created I am always open to improving it! &#xD;
+&#xD;
+&amp;gt; [!TIP]&#xD;
+&amp;gt; Add environment variables so that you can for example change the password of the server&#xD;
+&amp;gt; On the bottom you will find a list of all environment variables to change, if you want to use your own app.cfg file&#xD;
+&amp;gt; set the CUSTOM_CONFIG to true&#xD;
+&amp;gt; Here are all the possible changes from the devs [link](https://dedicated.foundry-game.com/) &#xD;
+&#xD;
+## Docker Run&#xD;
+&#xD;
+**This will create the folders './server' and './data' in your current folder where you execute the code**&#xD;
+&#xD;
+**Recommendation:**&#xD;
+Create a folder before executing this docker command&#xD;
+&#xD;
+To deploy this docker project run:&#xD;
+&#xD;
+```bash&#xD;
+docker run -d \&#xD;
+    --name foundry \&#xD;
+    -p 3724:3724/udp \    &#xD;
+    -p 27015:27015/udp \&#xD;
+    -v ./server:/mnt/foundry/server \&#xD;
+    -v ./data:/mnt/foundry/persistentdata \&#xD;
+    -e TZ=Europe/Paris \&#xD;
+    -e SERVER_PWD=change_me&#xD;
+    -e SERVER_NAME='Foundry docker by Luxusburg'&#xD;
+    -e PAUSE_SERVER_WHEN_EMPTY=false&#xD;
+    luxusburg/docker-foundry:latest&#xD;
+```&#xD;
+&#xD;
+## Docker compose Deployment&#xD;
+&#xD;
+**This will create the folders './server' and './data' in your current folder where you execute combose file**&#xD;
+&#xD;
+**Recommendation:**&#xD;
+Create a folder before executing the docker compose file&#xD;
+&#xD;
+&amp;gt; [!IMPORTANT]&#xD;
+&amp;gt; Older docker compose version needs this line before the **services:** line&#xD;
+&amp;gt;&#xD;
+&amp;gt; version: '3'&#xD;
+&#xD;
+```yml&#xD;
+services:&#xD;
+  foundry:&#xD;
+    container_name: foundry&#xD;
+    image: luxusburg/docker-foundry:latest&#xD;
+    network_mode: bridge&#xD;
+    environment:&#xD;
+      - TZ=Europe/Paris&#xD;
+      - SERVER_PWD=change_me&#xD;
+      - SERVER_NAME='Foundry docker by Luxusburg'&#xD;
+      - PAUSE_SERVER_WHEN_EMPTY=false&#xD;
+    volumes:&#xD;
+      - './server:/mnt/foundry/server:rw'&#xD;
+      - './data:/mnt/foundry/persistentdata:rw'&#xD;
+    ports:&#xD;
+      - '3724:3724/udp'&#xD;
+      - '27015:27015/udp'&#xD;
+```&#xD;
+&#xD;
+## Backup &amp;amp; recovery&#xD;
+&#xD;
+Backups are all saved in the folder you set in your volume for `/location/of/folder:/mnt/foundry/persistentdata`&#xD;
+There should be a folder in it called `backup`.&#xD;
+&#xD;
+Per Default backups are activated and done every hour of the day you can change this by looking at the environment variables further below.&#xD;
+&#xD;
+&amp;gt; [!IMPORTANT]&#xD;
+&amp;gt; This command will overwrite your current save files! **Copy/backup the files before overwriting them!**&#xD;
+&#xD;
+If you want to recover a backup you need to stop the container and unzip the files into your folder `/location/of/folder` with this command for example&#xD;
+`tar -xzvf /location/of/folder/backup/foundry-backup-DATE_AND_TIME_OF_BACKUP_YOU_WANT_TO_USE.tar.gz -C /location/of/folder/`&#xD;
+&#xD;
+&#xD;
+## Environment variables Game settings&#xD;
+&#xD;
+You can use these environment variables for your game settings:&#xD;
+&#xD;
+| Variable | Key | Description |&#xD;
+| -------------------- | ---------------------------- | ------------------------------------------------------------------------------- |&#xD;
+| TZ | Europe/Paris | timezone |&#xD;
+| WORLD_NAME | optional save name for map | Sets the server world name. This is the folder where the save files will be stored. |&#xD;
+| SERVER_PWD | optional password | Sets the server password. |&#xD;
+| PAUSE_SERVER_WHEN_EMPTY | optional: true or false  | Will the server pause when nobody is connected. |&#xD;
+| AUTOSAVE_INTERVAL | optional in seconds | Sets the autosave frequency in seconds. |&#xD;
+| SERVER_IS_PUBLIC | optional: true of false | Sets whether the server is listed on the Steam server browser. |&#xD;
+| SERVER_PORT | optional | Sets the network port used by the game. Default is 3724. |&#xD;
+| SERVER_QUERY_PORT | optional | Sets the network port used by the Steam server browser to query information about the game. This is only used if the server is set to public. Default is 27015. |&#xD;
+| SERVER_NAME | optional | This is the name of the server listed in the Steam server browser. |&#xD;
+| MAP_SEED | optional | Sets the map seed used to generate the world. |&#xD;
+| SERVER_MAX_PLAYERS | optional | This sets the max amount of players on a server. |&#xD;
+| MAX_TRANSFER_RATE | optional default: 1024 max: 8192 | Change transfer rate of the server data |&#xD;
+| CUSTOM_CONFIG | optional: true of false | Set this to true if the server should only accept you manual adapted app.cfg file |&#xD;
+&#xD;
+## Environment variables Backup settings&#xD;
+&#xD;
+&amp;gt; [!WARNING]&#xD;
+&amp;gt; For BACKUP_INTERVAL **do not set double or single quotes** :  `""` or `''`&#xD;
+&#xD;
+| Variable | Key | Description |&#xD;
+| -------------------- | ---------------------------- | ------------------------------------------------------------------------------- |&#xD;
+| BACKUPS | true (default) or false | Activate backups |&#xD;
+| BACKUP_INTERVAL | default: 0 * * * * | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) value for the backups |&#xD;
+| BACKUP_RETENTION | default: 30 min: 1 |Sets how many days the backups should be kept |</Overview>
+  <Category>GameServers:</Category>
+  <Icon/>
+  <DateInstalled>1715847941</DateInstalled>
+  <Config Name="server_files" Target="/home/foundry/server_files" Default="/mnt/user/appdata/foundry/server_files" Mode="rw" Description="" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/foundry/server_files</Config>
+  <Config Name="persistent_data" Target="/home/foundry/persistent_data" Default="/mnt/user/appdata/foundry/persistent_data" Mode="rw" Description="" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/foundry/persistent_data</Config>
+  <Config Name="SERVER_NAME" Target="SERVER_NAME" Default="Foundry docker by Luxusburg" Mode="" Description="This is the name of the server listed in the Steam server browser." Type="Variable" Display="always" Required="false" Mask="false">Foundry docker by Luxusburg</Config>
+  <Config Name="SERVER_IS_PUBLIC" Target="SERVER_IS_PUBLIC" Default="true|false" Mode="" Description="Sets whether the server is listed on the Steam server browser." Type="Variable" Display="always" Required="false" Mask="false">false</Config>
+  <Config Name="WORLD_NAME" Target="WORLD_NAME" Default="" Mode="" Description="" Type="Variable" Display="always" Required="false" Mask="false">MyFancyFactory</Config>
+  <Config Name="MAP_SEED" Target="MAP_SEED" Default="" Mode="" Description="" Type="Variable" Display="advanced-hide" Required="false" Mask="false">123456789</Config>
+  <Config Name="SERVER_PORT" Target="SERVER_PORT" Default="3724" Mode="udp" Description="Sets the network port used by the game. Default is 3724." Type="Port" Display="advanced-hide" Required="false" Mask="false">3724</Config>
+  <Config Name="SERVER_QUERY_PORT" Target="SERVER_QUERY_PORT" Default="27015" Mode="udp" Description="Sets the network port used by the Steam server browser to query information about the game. This is only used if the server is set to public. Default is 27015." Type="Port" Display="advanced-hide" Required="false" Mask="false">27015</Config>
+  <Config Name="PAUSE_SERVER_WHEN_EMPTY" Target="PAUSE_SERVER_WHEN_EMPTY" Default="true|false" Mode="" Description="Will the server pause when nobody is connected." Type="Variable" Display="advanced-hide" Required="false" Mask="false">true</Config>
+</Container>
