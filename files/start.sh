@@ -54,7 +54,7 @@ else
     if [ ! -z $BACKUPS ]; then
         if [ $BACKUPS = false ]; then
             echo "[IMPORTANT] Backups are disabled!"
-            sed -i "/backup.sh/c # 0 * * * * /backup.sh 2>&1" /var/spool/cron/crontabs/root
+            doas -u root sed -i "/backup.sh/c # 0 * * * * /home/foundry/scripts/backup.sh 2>&1" /var/spool/cron/crontabs/root
             echo " "
         fi
     fi
@@ -63,7 +63,7 @@ else
             echo "[IMPORTANT] Backups are disabled ignoring BACKUP_INTERVAL!"
         else
             echo "Changing backup interval to $BACKUP_INTERVAL"
-            sed -i "/backup.sh/c $BACKUP_INTERVAL /backup.sh 2>&1" /var/spool/cron/crontabs/root
+             doas -u root sed -i "/backup.sh/c $BACKUP_INTERVAL /home/foundry/scripts/backup.sh 2>&1" /var/spool/cron/crontabs/root
             echo " "
         fi    
     fi
