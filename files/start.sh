@@ -9,6 +9,8 @@ echo "Server files location is set to : $server_files"
 echo "Save files locaiton is set to : $persistent_data"
 echo " "
 
+mkdir -p /home/foundry/.steam 2>/dev/null
+chmod -R 777 /home/foundry/.steam 2>/dev/null
 echo " "
 echo "Updating Foundry Dedicated Server files..."
 echo " "
