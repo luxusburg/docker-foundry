@@ -35,7 +35,5 @@ WORKDIR $HOME
 ADD --chown=$USER:$USER ./files $HOME/scripts
 RUN chmod +x $HOME/scripts/*.sh
 
-#USER $USER
 ENTRYPOINT ["/bin/bash", "/home/foundry/scripts/entrypoint.sh"]
 CMD ["/home/foundry/scripts/start.sh"]
-#CMD ["bash"]
