@@ -9,8 +9,6 @@ echo "Server files location is set to : $server_files"
 echo "Save files locaiton is set to : $persistent_data"
 echo " "
 
-mkdir -p /home/foundry/.steam 2>/dev/null
-chmod -R 777 /home/foundry/.steam 2>/dev/null
 echo " "
 echo "Updating Foundry Dedicated Server files..."
 echo " "
@@ -48,23 +46,26 @@ else
 fi
 
 echo " "
-if [ ! -z $BACKUPS ]; then
-    if [ $BACKUPS = false ]; then
-        echo "[IMPORTANT] Backups are disabled!"
-        sed -i "/backup.sh/c # 0 * * * * /backup.sh 2>&1" /var/spool/cron/crontabs/root
-        echo " "
+if [ ! -z $NO_CRON ]; then
+    echo "No Cron image used!"
+else
+    if [ ! -z $BACKUPS ]; then
+        if [ $BACKUPS = false ]; then
+            echo "[IMPORTANT] Backups are disabled!"
+            sed -i "/backup.sh/c # 0 * * * * /backup.sh 2>&1" /var/spool/cron/crontabs/root
+            echo " "
+        fi
+    fi
+    if [ ! -z "$BACKUP_INTERVAL" ]; then
+        if [[ $BACKUPS = false ]]; then
+            echo "[IMPORTANT] Backups are disabled ignoring BACKUP_INTERVAL!"
+        else
+            echo "Changing backup interval to $BACKUP_INTERVAL"
+            sed -i "/backup.sh/c $BACKUP_INTERVAL /backup.sh 2>&1" /var/spool/cron/crontabs/root
+            echo " "
+        fi    
     fi
 fi
-if [ ! -z "$BACKUP_INTERVAL" ]; then
-    if [[ $BACKUPS = false ]]; then
-        echo "[IMPORTANT] Backups are disabled ignoring BACKUP_INTERVAL!"
-    else
-        echo "Changing backup interval to $BACKUP_INTERVAL"
-        sed -i "/backup.sh/c $BACKUP_INTERVAL /backup.sh 2>&1" /var/spool/cron/crontabs/root
-        echo " "
-    fi    
-fi
-
 echo " "
 echo "Cleaning possible X11 leftovers"
 echo " "
@@ -74,15 +75,6 @@ rm -r /tmp/*
 cd "$server_files"
 echo "Starting Foundry Dedicated Server"
 echo " "
-#echo "Starting Xvfb"
-#Xvfb :0 -screen 0 640x480x24:32 -nolisten tcp -nolisten unix &
-
-# save PID of Xvfb process for clean shutdown
-#XVFB_PID=$!
-
 echo "Launching wine Foundry"
 echo " "
 xvfb-run wine $server_files/FoundryDedicatedServer.exe -log 2>&1
-
-# make sure Xvfb process will be stopped and remove lock
-#kill $XVFB_PID
