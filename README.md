@@ -33,8 +33,8 @@ docker run -d \
     --name foundry \
     -p 3724:3724/udp \    
     -p 27015:27015/udp \
-    -v ./server:/mnt/foundry/server \
-    -v ./data:/mnt/foundry/persistentdata \
+    -v ./server:/home/foundry/server_files \
+    -v ./data:/home/foundry/persistent_data \
     -e TZ=Europe/Paris \
     -e SERVER_PWD=change_me
     -e SERVER_NAME='Foundry docker by Luxusburg'
@@ -66,11 +66,12 @@ services:
       - SERVER_NAME='Foundry docker by Luxusburg'
       - PAUSE_SERVER_WHEN_EMPTY=false
     volumes:
-      - './server:/mnt/foundry/server:rw'
-      - './data:/mnt/foundry/persistentdata:rw'
+      - './server:/home/foundry/server_files_:rw'
+      - './data:/home/foundry/persistent_data:rw'
     ports:
       - '3724:3724/udp'
       - '27015:27015/udp'
+    restart: unless-stopped
 ```
 
 ## Backup & recovery
@@ -117,3 +118,10 @@ You can use these environment variables for your game settings:
 | BACKUPS | true (default) or false | Activate backups |
 | BACKUP_INTERVAL | default: 0 * * * * | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) value for the backups |
 | BACKUP_RETENTION | default: 30 min: 1 |Sets how many days the backups should be kept |
+
+## Environment variables for the User PUID/GUID
+
+| Variable | Key | Description |
+| -------------------- | ---------------------------- | ------------------------------------------------------------------------------- |
+| PUID | default: 1000 | User ID |
+| PGUID | default: 1000| Group ID |
