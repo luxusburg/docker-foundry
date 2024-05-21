@@ -1,6 +1,15 @@
 #!/bin/bash
 # Location of server data and save data for docker
 
+# Check if old volume mount exists from before 1.3
+if [ -d '/mnt/foundry/server' ] || [ -d '/mnt/foundry/persistentdata' ]; then
+    echo "Old docker volume setup found!"
+    echo "Change your volume from /your/path/:/mnt/foundry/server too /your/path/:/home/foundry/server_files"
+    echo "Check release notes 1.3 for more information!"
+    echo "https://github.com/luxusburg/docker-foundry/releases"
+    exit 1
+fi
+
 server_files=/home/foundry/server_files
 persistent_data=/home/foundry/persistent_data
 
