@@ -2,19 +2,19 @@
 # Backup for the game save files.
 
 # Location of save directory.
-loc_dir="/mnt/foundry/persistentdata/"
+loc_dir="/home/foundry/persistent_data/"
 # Location of backup folder.
-backup_folder="/mnt/foundry/persistentdata/backup"
+backup_folder="/home/foundry/persistent_data/backup"
 # Setting backup retention to a default value when it is not set
 if [ -z $BACKUP_RETENTION ]; then
-    BACKUP_RETENTION=30
+    BACKUP_RETENTION=10
 else
     # Checking if backup retention is a number and not negative	
     if [ $BACKUP_RETENTION > 0 ] && [[ $BACKUP_RETENTION =~ ^[0-9]+$ ]]; then
 	    echo "Backup retention value: $BACKUP_RETENTION is valid!"	
 	else
 	    echo "[WARNING] '$BACKUP_RETENTION' is not a valid value! Setting to default!"
-	    BACKUP_RETENTION=30
+	    BACKUP_RETENTION=10
 	fi
 fi
 

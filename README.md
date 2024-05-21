@@ -19,6 +19,26 @@ This is my first Docker image ever created I am always open to improving it!
 > set the CUSTOM_CONFIG to true
 > Here are all the possible changes from the devs [link](https://dedicated.foundry-game.com/) 
 
+> [!IMPORTANT]
+> The first server start can take a few minutes! If you are stuck in the logs on this part just be a bit more patient:
+
+```bash
+wine: created the configuration directory '/home/foundry/.wine'
+002c:fixme:actctx:parse_depend_manifests Could not find dependent assembly L"Microsoft.Windows.Common-Controls" (6.0.0.0)
+004c:fixme:actctx:parse_depend_manifests Could not find dependent assembly L"Microsoft.Windows.Common-Controls" (6.0.0.0)
+0054:fixme:actctx:parse_depend_manifests Could not find dependent assembly L"Microsoft.Windows.Common-Controls" (6.0.0.0)
+0054:err:ole:StdMarshalImpl_MarshalInterface Failed to create ifstub, hr 0x80004002
+0054:err:ole:CoMarshalInterface Failed to marshal the interface {6d5140c1-7436-11ce-8034-00aa006009fa}, hr 0x80004002
+0054:err:ole:apartment_get_local_server_stream Failed: 0x80004002
+0054:err:ole:start_rpcss Failed to open RpcSs service
+004c:err:ole:StdMarshalImpl_MarshalInterface Failed to create ifstub, hr 0x80004002
+004c:err:ole:CoMarshalInterface Failed to marshal the interface {6d5140c1-7436-11ce-8034-00aa006009fa}, hr 0x80004002
+004c:err:ole:apartment_get_local_server_stream Failed: 0x80004002
+0090:err:winediag:gnutls_process_attach failed to load libgnutls, no support for encryption
+0090:err:winediag:process_attach failed to load libgnutls, no support for pfx import/export
+0098:err:winediag:gnutls_process_attach failed to load libgnutls, no support for encryption
+```
+
 ## Docker Run
 
 **This will create the folders './server' and './data' in your current folder where you execute the code**
@@ -33,12 +53,13 @@ docker run -d \
     --name foundry \
     -p 3724:3724/udp \    
     -p 27015:27015/udp \
-    -v ./server:/mnt/foundry/server \
-    -v ./data:/mnt/foundry/persistentdata \
+    -v ./server:/home/foundry/server_files \
+    -v ./data:/home/foundry/persistent_data \
     -e TZ=Europe/Paris \
     -e SERVER_PWD=change_me
     -e SERVER_NAME='Foundry docker by Luxusburg'
     -e PAUSE_SERVER_WHEN_EMPTY=false
+    -e MAX_TRANSFER_RATE=8192
     luxusburg/docker-foundry:latest
 ```
 
@@ -65,12 +86,14 @@ services:
       - SERVER_PWD=change_me
       - SERVER_NAME='Foundry docker by Luxusburg'
       - PAUSE_SERVER_WHEN_EMPTY=false
+      - MAX_TRANSFER_RATE=8192
     volumes:
-      - './server:/mnt/foundry/server:rw'
-      - './data:/mnt/foundry/persistentdata:rw'
+      - './server:/home/foundry/server_files_:rw'
+      - './data:/home/foundry/persistent_data:rw'
     ports:
       - '3724:3724/udp'
       - '27015:27015/udp'
+    restart: unless-stopped
 ```
 
 ## Backup & recovery
@@ -117,3 +140,10 @@ You can use these environment variables for your game settings:
 | BACKUPS | true (default) or false | Activate backups |
 | BACKUP_INTERVAL | default: 0 * * * * | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) value for the backups |
 | BACKUP_RETENTION | default: 30 min: 1 |Sets how many days the backups should be kept |
+
+## Environment variables for the User PUID/GUID
+
+| Variable | Key | Description |
+| -------------------- | ---------------------------- | ------------------------------------------------------------------------------- |
+| PUID | default: 1000 | User ID |
+| PGUID | default: 1000| Group ID |

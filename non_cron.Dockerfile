@@ -11,8 +11,9 @@ ENV HOME /home/$USER
 ENV TZ 'Europe/Berlin'
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
+ENV NO_CRON true
 
-# Install wine xvfb and cron
+# Install wine
 RUN apk add --no-cache wine xvfb xvfb-run doas tzdata musl musl-utils musl-locales libgcc
 
 RUN echo 'export LC_ALL=$LC_ALL' >> /etc/profile.d/locale.sh && \
@@ -26,11 +27,6 @@ RUN addgroup -g ${PGUID:-1000} $USER && \
 
 RUN echo "permit nopass $USER as root" > /etc/doas.conf
 
-# Setting up cron file for backup
-ADD --chown=$USER:$USER ./files/foundry-cron /etc/cron.d/foundry-cron
-RUN chmod 0644 /etc/cron.d/foundry-cron && \
-    crontab /etc/cron.d/foundry-cron && \
-    crond
 
 USER $USER
 WORKDIR $HOME
