@@ -2,9 +2,9 @@
 # Backup for the game save files.
 
 # Location of save directory.
-loc_dir="/home/foundry/persistentdata/"
+loc_dir="/home/foundry/persistent_data/"
 # Location of backup folder.
-backup_folder="/home/foundry/persistentdata/backup"
+backup_folder="/home/foundry/persistent_data/backup"
 # Setting backup retention to a default value when it is not set
 if [ -z $BACKUP_RETENTION ]; then
     BACKUP_RETENTION=10
