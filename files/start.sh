@@ -62,7 +62,6 @@ if [ ! -z $NO_CRON ]; then
 else
     # Starting crond to be sure it's running
     doas -u root crond
-    if []
     if [ ! -z $BACKUPS ]; then
         if [ $BACKUPS = false ]; then
             echo "[IMPORTANT] Backups are disabled!"
