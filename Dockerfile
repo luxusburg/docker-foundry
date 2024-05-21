@@ -19,11 +19,18 @@ RUN echo 'export LC_ALL=$LC_ALL' >> /etc/profile.d/locale.sh && \
   sed -i 's|LANG=C.UTF-8|LANG=$LANG|' /etc/profile.d/locale.sh
 
 RUN ln -s /usr/lib/libgcc_s.so.1 /usr/lib/wine/x86_64-unix/
+
 # add new user
-RUN adduser -D $USER 
+RUN addgroup -g ${PGUID:-1000} $USER && \
+    adduser -D -G $USER -u ${PUID:-1000} $USER 
 
 RUN echo "permit nopass $USER as root" > /etc/doas.conf
 
+# Setting up cron file for backup
+ADD --chown=$USER:$USER ./files/foundry-cron /etc/cron.d/foundry-cron
+RUN chmod 0644 /etc/cron.d/foundry-cron && \
+    crontab /etc/cron.d/foundry-cron && \
+    cron
 
 USER $USER
 WORKDIR $HOME
