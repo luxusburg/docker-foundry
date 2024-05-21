@@ -12,7 +12,7 @@ ENV TZ 'Europe/Berlin'
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
-# Install wine
+# Install wine xvfb and cron
 RUN apk add --no-cache wine xvfb xvfb-run doas tzdata musl musl-utils musl-locales libgcc
 
 RUN echo 'export LC_ALL=$LC_ALL' >> /etc/profile.d/locale.sh && \
@@ -30,7 +30,7 @@ RUN echo "permit nopass $USER as root" > /etc/doas.conf
 ADD --chown=$USER:$USER ./files/foundry-cron /etc/cron.d/foundry-cron
 RUN chmod 0644 /etc/cron.d/foundry-cron && \
     crontab /etc/cron.d/foundry-cron && \
-    cron
+    crond
 
 USER $USER
 WORKDIR $HOME
