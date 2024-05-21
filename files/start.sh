@@ -72,6 +72,9 @@ echo " "
 rm /tmp/.X0-lock
 rm -r /tmp/*
 
+# add Mods folder for future use
+mkdir -p "$server_files/Mods" 2>/dev/null
+
 cd "$server_files"
 echo "Starting Foundry Dedicated Server"
 echo " "
