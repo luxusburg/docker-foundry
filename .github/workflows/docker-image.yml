@@ -14,8 +14,8 @@ jobs:
         include:
           - dockerfile: ./Dockerfile
             image: hub.docker.com/r/luxusburg/docker-foundry:latest
-          #- dockerfile: ./Dockerfile.alpine
-          #  image: hub.docker.com/r/luxusburg/docker-foundry:alpine
+          - dockerfile: ./non_cron.Dockerfile
+            image: hub.docker.com/r/luxusburg/docker-foundry:non_cron
           
     permissions:
       contents: read
