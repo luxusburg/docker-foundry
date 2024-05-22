@@ -13,9 +13,9 @@ jobs:
       matrix:
         include:
           - dockerfile: ./Dockerfile
-            image: hub.docker.com/r/luxusburg/docker-foundry:latest
+            image: luxusburg/docker-foundry:latest
           - dockerfile: ./non_cron.Dockerfile
-            image: hub.docker.com/r/luxusburg/docker-foundry:non_cron
+            image: luxusburg/docker-foundry:non_cron
           
     permissions:
       contents: read
