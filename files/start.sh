@@ -1,10 +1,11 @@
 #!/bin/bash
 # Location of server data and save data for docker
 
-# Check if old volume mount exists from before 1.3
+# Check if old volume mounts exists from before 1.3 # we check for 2 but only warned about 1
 if [ -d '/mnt/foundry/server' ] || [ -d '/mnt/foundry/persistentdata' ]; then
     echo "Old docker volume setup found!"
     echo "Change your volume from /your/path/:/mnt/foundry/server too /your/path/:/home/foundry/server_files"
+    echo "Change your volume from /your/path/:/mnt/foundry/server too /your/path/:/home/foundry/persistent_data"
     echo "Check release notes 1.3 for more information!"
     echo "https://github.com/luxusburg/docker-foundry/releases"
     exit 1
@@ -79,14 +80,24 @@ else
         fi    
     fi
 fi
+
 echo " "
 echo "Cleaning possible X11 leftovers"
 echo " "
-rm /tmp/.X0-lock
-rm -r /tmp/*
+if [ -f /tmp/.X0-lock ] || [ -d /tmp/ ]; then
+    if [ -f /tmp/.X0-lock ]; then
+        rm /tmp/.X0-lock > /dev/null 2>&1
+    fi
+    if [ -d /tmp/ ]; then
+        rm -r /tmp/* > /dev/null 2>&1
+    fi
+fi
 
-# add Mods folder for future use
-mkdir -p $server_files/Mods 2>/dev/null
+if [ -d $server_files/Mods ]; then
+    echo "Mods directory already exists, skipping creation."
+    else
+    mkdir -p $server_files/Mods 2>/dev/null
+fi
 
 cd "$server_files"
 echo "Starting Foundry Dedicated Server"
