@@ -5,7 +5,7 @@
 if [ -d '/mnt/foundry/server' ] || [ -d '/mnt/foundry/persistentdata' ]; then
     echo "Old docker volume setup found!"
     echo "Change your volume from /your/path/:/mnt/foundry/server too /your/path/:/home/foundry/server_files"
-    echo "Change your volume from /your/path/:/mnt/foundry/server too /your/path/:/home/foundry/persistent_data"
+    echo "Change your volume from /your/path/:/mnt/foundry/persistentdata too /your/path/:/home/foundry/persistent_data"
     echo "Check release notes 1.3 for more information!"
     echo "https://github.com/luxusburg/docker-foundry/releases"
     exit 1
