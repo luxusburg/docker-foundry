@@ -1,8 +1,7 @@
-FROM steamcmd/steamcmd:alpine
+FROM steamcmd/steamcmd:alpine as base
 LABEL maintainer="git@luxusburg.lu"
 
 ARG DEBIAN_FRONTEND="noninteractive"
-
 VOLUME ["/home/foundry/server_files", "/home/foundry/persistent_data"]
 
 # Set environment variables
@@ -26,12 +25,6 @@ RUN addgroup -g ${PGUID:-1000} $USER && \
 
 RUN echo "permit nopass $USER as root" > /etc/doas.conf
 
-# Setting up cron file for backup
-ADD --chown=$USER:$USER ./files/foundry-cron /etc/cron.d/foundry-cron
-RUN chmod 0644 /etc/cron.d/foundry-cron && \
-    crontab /etc/cron.d/foundry-cron && \
-    crond
-
 USER $USER
 WORKDIR $HOME
 
@@ -41,3 +34,13 @@ RUN chmod +x $HOME/scripts/*.sh
 
 ENTRYPOINT ["/bin/bash", "/home/foundry/scripts/entrypoint.sh"]
 CMD ["/home/foundry/scripts/start.sh"]
+
+FROM base as image-cron
+USER root
+# Setting up cron file for backup
+ADD --chown=$USER:$USER ./files/foundry-cron /etc/cron.d/foundry-cron
+RUN chmod 0644 /etc/cron.d/foundry-cron && \
+    crontab /etc/cron.d/foundry-cron && \
+    crond
+USER $USER
+
