@@ -147,3 +147,10 @@ You can use these environment variables for your game settings:
 | -------------------- | ---------------------------- | ------------------------------------------------------------------------------- |
 | PUID | default: 1000 | User ID |
 | PGUID | default: 1000| Group ID |
+
+## Environemnt variables for the beta branch
+
+| Variable | Key | Description |
+| -------------------- | ---------------------------- | ------------------------------------------------------------------------------- |
+| BETANAME |  no default value| Set the beta branch name. Don't use `""` or `''`!|
+| BETAPASSWORD | no default value | Set the beta branch password. Don't use `""` or `''`! |

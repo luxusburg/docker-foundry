@@ -24,7 +24,20 @@ chmod -R 777 /home/foundry/.steam 2>/dev/null
 echo " "
 echo "Updating Foundry Dedicated Server files..."
 echo " "
-steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir "$server_files" +login anonymous +app_update 2915550 validate +quit
+
+if [ ! -z $BETANAME ];then
+    if [ ! -z $BETAPASSWORD ]; then
+        echo "Using beta $BETANAME with the password $BETAPASSWORD"
+        steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir "$server_files" +login anonymous +app_update "2915550 -beta $BETANAME -betapassword $BETAPASSWORD" validate +quit
+    else
+        echo "Using beta $BETANAME without a password!" 
+        steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir "$server_files" +login anonymous +app_update "2915550 -beta $BETANAME" validate +quit
+    fi
+else
+    echo "No beta branch used."
+    steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir "$server_files" +login anonymous +app_update 2915550 validate +quit
+fi
+
 echo "steam_appid: "`cat $server_files/steam_appid.txt`
 echo " "
 
