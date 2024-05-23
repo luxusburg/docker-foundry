@@ -5,6 +5,15 @@
 
 [![Docker Hub](https://img.shields.io/badge/Docker_Hub-foundry-blue?logo=docker)](https://hub.docker.com/r/luxusburg/docker-foundry)
 
+## Table of contents
+- [Docker Run command](#docker-run)
+- [Docker Compose command](#docker-compose-deployment)
+- [Backup & recovery](#backup--recovery)
+- [Environment variables Game settings](#environment-variables-game-settings)
+- [Environment variables Backup settings](#environment-variables-backup-settings)
+- [Environment variables for the User PUID/GUID](#environment-variables-for-the-user-puidguid)
+- [Environemnt variables for the beta branch](#environemnt-variables-for-the-beta-branch)
+
 This is a Docker container to help you get started with hosting your own [Foundry](https://www.paradoxinteractive.com/games/foundry/about) dedicated server.
 
 This Docker container has been tested and will work on the following OS:
