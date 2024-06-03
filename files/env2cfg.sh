@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Convert all environment variables to lowercase and export them
+for var in $(compgen -e); do export "${var,,}"="${!var}"; done
+
 # Define the app.cfg file path
 APP_FILE="$server_files/app.cfg"
 
@@ -13,7 +16,7 @@ cp "$server_files/app.cfg" "$server_files/app_backup.cfg" &>/dev/null
 declare -a set_variables
 
 # Loop through the list of environment variables to add to the app.cfg file
-for var in WORLD_NAME SERVER_PWD PAUSE_SERVER_WHEN_EMPTY AUTOSAVE_INTERVAL SERVER_IS_PUBLIC SERVER_PORT SERVER_QUERY_PORT MAP_SEED SERVER_NAME SERVER_MAX_PLAYERS MAX_TRANSFER_RATE; do
+for var in world_name server_pwd pause_server_when_empty autosave_interval server_is_public server_port server_query_port map_seed server_name server_max_players max_transfer_rate; do
   # Check if the environment variable is set
   if [[ -n ${!var} ]]; then
     # Assign the value of the environment variable to the variable 'value'
