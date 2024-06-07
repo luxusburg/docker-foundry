@@ -85,6 +85,7 @@ Create a folder before executing the docker compose file
 > version: '3'
 
 ```yml
+---
 services:
   foundry:
     container_name: foundry
@@ -92,16 +93,27 @@ services:
     network_mode: bridge
     environment:
       - TZ=Europe/Paris
+      - WORLD_NAME='worldname'
       - SERVER_PWD=change_me
-      - SERVER_NAME='Foundry docker by Luxusburg'
       - PAUSE_SERVER_WHEN_EMPTY=false
+      - AUTOSAVE_INTERVAL=300
+      - SERVER_IS_PUBLIC=true
+      - SERVER_PORT=3724
+      - SERVER_QUERY_PORT=27015
+      - SERVER_NAME='Foundry docker by Luxusburg'
+      - MAP_SEED=0123456789
+      - SERVER_MAX_PLAYERS=10
       - MAX_TRANSFER_RATE=8192
+      - CUSTOM_CONFIG=false
+      - BACKUPS=true
+      - BACKUP_INTERVAL=0 * * * *
+      - BACKUP_RETENTION=30
     volumes:
-      - './server:/home/foundry/server_files_:rw'
-      - './data:/home/foundry/persistent_data:rw'
+      - ./server:/home/foundry/server_files:rw
+      - ./data:/home/foundry/persistent_data:rw
     ports:
-      - '3724:3724/udp'
-      - '27015:27015/udp'
+      - 3724:3724/udp
+      - 27015:27015/udp
     restart: unless-stopped
 ```
 
