@@ -85,6 +85,7 @@ Create a folder before executing the docker compose file
 > version: '3'
 
 ```yml
+---
 services:
   foundry:
     container_name: foundry
@@ -92,16 +93,26 @@ services:
     network_mode: bridge
     environment:
       - TZ=Europe/Paris
+      - WORLD_NAME='worldname'
       - SERVER_PWD=change_me
-      - SERVER_NAME='Foundry docker by Luxusburg'
       - PAUSE_SERVER_WHEN_EMPTY=false
+      - AUTOSAVE_INTERVAL=300
+      - SERVER_IS_PUBLIC=true
+      - SERVER_PORT=3724
+      - SERVER_QUERY_PORT=27015
+      - SERVER_NAME='Foundry docker by Luxusburg'
+      - SERVER_MAX_PLAYERS=10
       - MAX_TRANSFER_RATE=8192
+      - CUSTOM_CONFIG=false
+      - BACKUPS=true
+      - BACKUP_INTERVAL=0 * * * *
+      - BACKUP_RETENTION=10
     volumes:
-      - './server:/home/foundry/server_files_:rw'
-      - './data:/home/foundry/persistent_data:rw'
+      - ./server:/home/foundry/server_files:rw
+      - ./data:/home/foundry/persistent_data:rw
     ports:
-      - '3724:3724/udp'
-      - '27015:27015/udp'
+      - 3724:3724/udp
+      - 27015:27015/udp
     restart: unless-stopped
 ```
 
@@ -137,7 +148,7 @@ You can use these environment variables for your game settings:
 | MAP_SEED | optional | Sets the map seed used to generate the world. |
 | SERVER_MAX_PLAYERS | optional | This sets the max amount of players on a server. |
 | MAX_TRANSFER_RATE | optional default: 1024 max: 8192 | Change transfer rate of the server data |
-| CUSTOM_CONFIG | optional: true of false | Set this to true if the server should only accept you manual adapted app.cfg file |
+| CUSTOM_CONFIG | optional: true or false | Set this to true if the server should only accept you manual adapted app.cfg file |
 
 ## Environment variables Backup settings
 
