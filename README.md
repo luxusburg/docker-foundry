@@ -101,7 +101,6 @@ services:
       - SERVER_PORT=3724
       - SERVER_QUERY_PORT=27015
       - SERVER_NAME='Foundry docker by Luxusburg'
-      - MAP_SEED=0123456789
       - SERVER_MAX_PLAYERS=10
       - MAX_TRANSFER_RATE=8192
       - CUSTOM_CONFIG=false
