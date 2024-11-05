@@ -107,7 +107,7 @@ services:
       - CUSTOM_CONFIG=false
       - BACKUPS=true
       - BACKUP_INTERVAL=0 * * * *
-      - BACKUP_RETENTION=30
+      - BACKUP_RETENTION=10
     volumes:
       - ./server:/home/foundry/server_files:rw
       - ./data:/home/foundry/persistent_data:rw
@@ -149,7 +149,7 @@ You can use these environment variables for your game settings:
 | MAP_SEED | optional | Sets the map seed used to generate the world. |
 | SERVER_MAX_PLAYERS | optional | This sets the max amount of players on a server. |
 | MAX_TRANSFER_RATE | optional default: 1024 max: 8192 | Change transfer rate of the server data |
-| CUSTOM_CONFIG | optional: true of false | Set this to true if the server should only accept you manual adapted app.cfg file |
+| CUSTOM_CONFIG | optional: true or false | Set this to true if the server should only accept you manual adapted app.cfg file |
 
 ## Environment variables Backup settings
 

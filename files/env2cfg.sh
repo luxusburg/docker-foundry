@@ -20,7 +20,7 @@ for ((i=0; i<${#variables[@]}; i+=2)); do
     var_name=${variables[$i]}
     config_name=${variables[$i+1]}
 
-    if [! -z "${!var_name}" ]; then
+    if [ ! -z "${!var_name}" ]; then
         echo "${config_name} set to: ${!var_name}"
         if grep -q "$config_name" "$APP_FILE"; then
             sed -i "/$config_name=/c $config_name=${!var_name,,}" "$APP_FILE"
