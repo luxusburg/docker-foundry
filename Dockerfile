@@ -1,29 +1,39 @@
-FROM steamcmd/steamcmd:alpine as base
+FROM steamcmd/steamcmd:debian as base
 LABEL maintainer="git@luxusburg.lu"
 
 ARG DEBIAN_FRONTEND="noninteractive"
 VOLUME ["/home/foundry/server_files", "/home/foundry/persistent_data"]
 
 # Set environment variables
-ENV USER foundry
-ENV HOME /home/$USER
-ENV TZ 'Europe/Berlin'
-ENV LANG en_US.UTF-8
-ENV LC_ALL en_US.UTF-8
+ENV USER=foundry
+ENV HOME=/home/$USER
+ENV TZ='Europe/Berlin'
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
 
-# Install wine xvfb and cron
-RUN apk add --no-cache wine xvfb xvfb-run doas tzdata musl musl-utils musl-locales libgcc
+# Install wine, xvfb, cron, and xauth (required for xvfb-run)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        wine \
+        xvfb \
+        xauth \
+        cron \
+        tzdata \
+        locales \
+        sudo && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN echo 'export LC_ALL=$LC_ALL' >> /etc/profile.d/locale.sh && \
-  sed -i 's|LANG=C.UTF-8|LANG=$LANG|' /etc/profile.d/locale.sh
-
-RUN ln -s /usr/lib/libgcc_s.so.1 /usr/lib/wine/x86_64-unix/
+    sed -i 's|LANG=C.UTF-8|LANG=$LANG|' /etc/profile.d/locale.sh
 
 # add new user
-RUN addgroup -g ${PGUID:-1000} $USER && \
-    adduser -D -G $USER -u ${PUID:-1000} $USER 
+RUN groupadd -g ${PGUID:-1000} $USER && \
+    useradd -d $HOME -u ${PUID:-1000} -g $USER $USER && \
+    mkdir -p $HOME && \
+    chown $USER:$USER $HOME
 
-RUN echo "permit nopass $USER as root" > /etc/doas.conf
+RUN echo "$USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER && \
+    chmod 0440 /etc/sudoers.d/$USER
 
 USER $USER
 WORKDIR $HOME
@@ -41,6 +51,5 @@ USER root
 ADD --chown=$USER:$USER ./files/foundry-cron /etc/cron.d/foundry-cron
 RUN chmod 0644 /etc/cron.d/foundry-cron && \
     crontab /etc/cron.d/foundry-cron && \
-    crond
+    service cron start
 USER $USER
-
