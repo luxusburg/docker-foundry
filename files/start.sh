@@ -74,14 +74,14 @@ echo " "
 if [ -n "$NO_CRON" ]; then
     echo "No Cron image used!"
 else
-    doas -u root crond
+    sudo -u root cron
 
     if [ "$BACKUPS" = false ]; then
         echo "[IMPORTANT] Backups are disabled!"
-        doas -u root sed -i "/backup.sh/c # 0 * * * * /home/foundry/scripts/backup.sh 2>&1" /var/spool/cron/crontabs/root
+        sudo -u root sed -i "/backup.sh/c # 0 * * * * /home/foundry/scripts/backup.sh 2>&1" /var/spool/cron/crontabs/root
     elif [ -n "$BACKUP_INTERVAL" ]; then
         echo "Changing backup interval to $BACKUP_INTERVAL"
-        doas -u root sed -i "/backup.sh/c $BACKUP_INTERVAL /home/foundry/scripts/backup.sh 2>&1" /var/spool/cron/crontabs/root
+        sudo -u root sed -i "/backup.sh/c $BACKUP_INTERVAL /home/foundry/scripts/backup.sh 2>&1" /var/spool/cron/crontabs/root
     fi
 fi
 
