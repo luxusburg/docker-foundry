@@ -42,7 +42,7 @@ WORKDIR $HOME
 ADD --chown=$USER:$USER ./files $HOME/scripts
 RUN chmod +x $HOME/scripts/*.sh
 
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash", "/home/foundry/scripts/entrypoint.sh"]
 CMD ["/home/foundry/scripts/start.sh"]
 
 FROM base as image-cron
