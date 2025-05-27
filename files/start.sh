@@ -103,6 +103,11 @@ if [ -d $server_files/Mods ]; then
     mkdir -p $server_files/Mods 2>/dev/null
 fi
 
+if [ "$ENABLE_MODS" = true ]; then
+    echo "Download mods..."
+    source ./scripts/download_mods.sh
+fi
+
 cd "$server_files"
 echo "Starting Foundry Dedicated Server"
 echo " "
