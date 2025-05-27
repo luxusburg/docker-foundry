@@ -14,6 +14,7 @@ ENV LC_ALL=en_US.UTF-8
 # Install wine, xvfb, cron, and xauth (required for xvfb-run)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        jq \
         wine \
         xvfb \
         xauth \
