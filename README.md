@@ -69,7 +69,7 @@ docker run -d \
     -e MAX_TRANSFER_RATE=8192 \
     luxusburg/docker-foundry:latest
 ```
-#🏗️ Using `docker-compose`
+## 🏗️ Using `docker-compose`
 Create a `docker-compose.yml` file:
 ```yaml
 # version: '3.8' # Uncomment if your Docker Compose version requires it
