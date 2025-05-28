@@ -1,4 +1,4 @@
-FROM steamcmd/steamcmd:debian as base
+FROM steamcmd/steamcmd:debian AS base
 LABEL maintainer="git@luxusburg.lu"
 
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -46,7 +46,7 @@ RUN chmod +x $HOME/scripts/*.sh
 ENTRYPOINT ["/bin/bash", "/home/foundry/scripts/entrypoint.sh"]
 CMD ["/home/foundry/scripts/start.sh"]
 
-FROM base as image-cron
+FROM base AS image-cron
 USER root
 # Setting up cron file for backup
 ADD --chown=$USER:$USER ./files/foundry-cron /etc/cron.d/foundry-cron
