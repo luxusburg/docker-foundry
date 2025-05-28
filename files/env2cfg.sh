@@ -22,10 +22,18 @@ for ((i=0; i<${#variables[@]}; i+=2)); do
 
     if [ ! -z "${!var_name}" ]; then
         echo "${config_name} set to: ${!var_name}"
-        if grep -q "$config_name" "$APP_FILE"; then
-            sed -i "/$config_name=/c $config_name=${!var_name,,}" "$APP_FILE"
+        # Check if this is SERVER_PWD or SERVER_NAME
+        if [[ "$var_name" == "SERVER_PWD" || "$var_name" == "SERVER_NAME" ]]; then
+            # Don't convert to lowercase for these variables
+            value="${!var_name}"
         else
-            echo -ne "\n$config_name=${!var_name,,}" >> "$APP_FILE"
+            # Convert to lowercase for other variables
+            value="${!var_name,,}"
+        fi
+        if grep -q "$config_name" "$APP_FILE"; then
+            sed -i "/$config_name=/c $config_name=$value" "$APP_FILE"
+        else
+            echo -ne "\n$config_name=$value" >> "$APP_FILE"
         fi
     fi
 done
