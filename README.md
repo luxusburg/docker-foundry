@@ -196,7 +196,7 @@ The container uses environment variables for configuration.
 |-------------------|------------------------|-------------|
 | `BACKUPS`         | `true`                 | `true` or `false`. Enables or disables the automatic backup system. |
 | `BACKUP_INTERVAL` | `0 * * * *`            | Cron schedule for backups (e.g., `0 * * * *` for every hour at minute 0) 🗓️ [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) |
-| `BACKUP_RETENTION`| `10` (backups)         | Sets how many days the backup files are kept. |
+| `BACKUP_RETENTION`| `10` (backups)         | Sets how many backup files are kept. |
 
 ### 👤 User PUID/PGID
 
