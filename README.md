@@ -13,21 +13,21 @@ Contributions and feedback for improvements are welcome! 🤝
 
 ## 📜 Table of Contents
 
-- [✨ Features](#features)
-- [✅ Prerequisites](#prerequisites)
-- [🚀 Quick Start](#quick-start)
-  - [🐳 Using `docker run`](#using-docker-run)
-  - [🏗️ Using `docker-compose`](#using-docker-compose)
-- [⚙️ Server Configuration](#server-configuration)
-  - [🗂️ Volumes](#volumes)
-- [💾 Backup and Recovery](#backup-and-recovery)
-- [🧩 Enabling and Managing Mods](#enabling-and-managing-mods)
-- [🔧 Environment Variables](#environment-variables)
-  - [🎮 Game Settings](#game-settings)
-  - [🗳️ Backup Settings](#backup-settings)
-  - [👤 User PUID/PGID](#user-puidpgid)
-  - [🧪 Beta Branch](#beta-branch)
-- [💖 Contributing](#contributing)
+- [✨ Features](#-features)
+- [✅ Prerequisites](#-prerequisites)
+- [🚀 Quick Start](#-quick-start)
+  - [🐳 Using `docker run`](#-using-docker-run)
+  - [🏗️ Using `docker-compose`](#-using-docker-compose)
+- [⚙️ Server Configuration](#-server-configuration)
+  - [🗂️ Volumes](#-volumes)
+- [💾 Backup and Recovery](#-backup-and-recovery)
+- [🧩 Enabling and Managing Mods](#-enabling-and-managing-mods)
+- [🔧 Environment Variables](#-environment-variables)
+  - [🎮 Game Settings](#-game-settings)
+  - [🗳️ Backup Settings](#-backup-settings)
+  - [👤 User PUID/PGID](#-user-puidpgid)
+  - [🧪 Beta Branch](#-beta-branch)
+- [💖 Contributing](#-contributing)
 
 ## ✨ Features
 
