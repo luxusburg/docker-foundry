@@ -1,4 +1,4 @@
-FROM steamcmd/steamcmd:debian as base
+FROM steamcmd/steamcmd:debian AS base
 LABEL maintainer="git@luxusburg.lu"
 
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -14,6 +14,7 @@ ENV LC_ALL=en_US.UTF-8
 # Install wine, xvfb, cron, and xauth (required for xvfb-run)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        jq \
         wine \
         xvfb \
         xauth \
@@ -45,7 +46,7 @@ RUN chmod +x $HOME/scripts/*.sh
 ENTRYPOINT ["/bin/bash", "/home/foundry/scripts/entrypoint.sh"]
 CMD ["/home/foundry/scripts/start.sh"]
 
-FROM base as image-cron
+FROM base AS image-cron
 USER root
 # Setting up cron file for backup
 ADD --chown=$USER:$USER ./files/foundry-cron /etc/cron.d/foundry-cron
