@@ -113,4 +113,4 @@ echo "Starting Foundry Dedicated Server"
 echo " "
 echo "Launching wine Foundry"
 echo " "
-xvfb-run wine $server_files/FoundryDedicatedServer.exe -log 2>&1
+source /home/foundry/scripts/wrapper.sh
