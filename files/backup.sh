@@ -10,12 +10,12 @@ if [ -z $BACKUP_RETENTION ]; then
     BACKUP_RETENTION=10
 else
     # Checking if backup retention is a number and not negative	
-    if [ $BACKUP_RETENTION > 0 ] && [[ $BACKUP_RETENTION =~ ^[0-9]+$ ]]; then
-	    echo "Backup retention value: $BACKUP_RETENTION is valid!"	
-	else
-	    echo "[WARNING] '$BACKUP_RETENTION' is not a valid value! Setting to default!"
-	    BACKUP_RETENTION=10
-	fi
+    if [ $BACKUP_RETENTION -gt 0 ] && [[ $BACKUP_RETENTION =~ ^[0-9]+$ ]]; then
+        echo "Backup retention value: $BACKUP_RETENTION is valid!"	
+    else
+        echo "[WARNING] '$BACKUP_RETENTION' is not a valid value! Setting to default!"
+        BACKUP_RETENTION=10
+    fi
 fi
 
 # Checking if backup folder exists.
@@ -44,11 +44,30 @@ echo "Backup finished"
 echo " "
 date
 
-# Removing files older than $BACKUP_RETENTION days
+# Keeping only the last $BACKUP_RETENTION backups
 echo " "
-echo "Removing backups older than: $BACKUP_RETENTION days"
+echo "Keeping only the last $BACKUP_RETENTION backups"
 echo " "
-find $backup_folder -name 'foundry_backup-*' -type f -mtime +$BACKUP_RETENTION -delete
 
-# List of all backups in $backup_folder
+# Get list of backups sorted by modification time (oldest first)
+backups=($(find $backup_folder -name 'foundry_backup-*' -type f -printf '%T@ %p\n' | sort -n | cut -d' ' -f2-))
+
+# Calculate how many to delete
+total_backups=${#backups[@]}
+if [ $total_backups -gt $BACKUP_RETENTION ]; then
+    delete_count=$((total_backups - BACKUP_RETENTION))
+    echo "Found $total_backups backups. Deleting the oldest $delete_count..."
+    
+    # Delete oldest backups
+    for ((i=0; i<delete_count; i++)); do
+        echo "Deleting ${backups[i]}"
+        rm -f "${backups[i]}"
+    done
+else
+    echo "Found $total_backups backups. No need to delete any (retention is $BACKUP_RETENTION)."
+fi
+
+# List of all remaining backups in $backup_folder
+echo " "
+echo "Current backups:"
 ls -lh $backup_folder
