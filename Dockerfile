@@ -27,13 +27,14 @@ RUN apt-get update && \
 RUN echo 'export LC_ALL=$LC_ALL' >> /etc/profile.d/locale.sh && \
     sed -i 's|LANG=C.UTF-8|LANG=$LANG|' /etc/profile.d/locale.sh
 
-# add new user
-RUN groupadd -g ${PGUID:-1000} $USER && \
-    useradd -d $HOME -u ${PUID:-1000} -g $USER $USER && \
+# add new user (default ids; the real PUID/PGID are applied at runtime in entrypoint.sh)
+RUN groupadd -g 1000 $USER && \
+    useradd -d $HOME -u 1000 -g $USER $USER && \
     mkdir -p $HOME && \
     chown $USER:$USER $HOME
 
-RUN echo "$USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER && \
+# SETENV lets the entrypoint re-exec via `sudo -E` while preserving env vars
+RUN echo "$USER ALL=(ALL) NOPASSWD:SETENV: ALL" > /etc/sudoers.d/$USER && \
     chmod 0440 /etc/sudoers.d/$USER
 
 USER $USER
