@@ -29,6 +29,14 @@ log_banner "FOUNDRY DEDICATED SERVER CONTAINER" \
     "Mods: ${ENABLE_MODS:-false}" \
     "Beta branch: ${BETANAME:-none}"
 
+# The web admin UI tails the container log, so mirror everything into a file
+# when it is enabled. Only then; the normal boot keeps writing to stdout alone.
+if [ "${WEBUI:-false}" = true ]; then
+    mkdir -p "$persistent_data/logs"
+    [ -f "$persistent_data/logs/container.log" ] && > "$persistent_data/logs/container.log"
+    exec > >(tee -a "$persistent_data/logs/container.log") 2>&1
+fi
+
 log_info "Server files location is set to : $server_files"
 log_info "Save files location is set to : $persistent_data"
 
@@ -113,6 +121,11 @@ else
     log_info "Starting backup scheduler..."
     bash /home/foundry/scripts/scheduler.sh &
     log_info "Backup scheduler running (pid $!)."
+fi
+
+if [ "${WEBUI:-false}" = true ]; then
+    log_info 'Launching web admin UI'
+    bash "$HOME/scripts/webui.sh" &
 fi
 
 log_step 4 "X11 cleanup"

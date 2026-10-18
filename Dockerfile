@@ -11,10 +11,11 @@ ENV TZ='Europe/Berlin'
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 
-# Install wine, xvfb, xauth (required for xvfb-run), jq and helpers
+# Install wine, xvfb, xauth (required for xvfb-run), jq, python3 (web admin UI) and helpers
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         jq \
+        python3 \
         wine \
         xvfb \
         xauth \
