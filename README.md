@@ -230,10 +230,10 @@ The container uses environment variables for configuration.
 | Variable                  | Default / Example       | Description |
 |---------------------------|-------------------------|-------------|
 | `TZ`                      | `Europe/Paris`          | Sets the timezone for the container 🌍. [List of tz database time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones). |
-| `WORLD_NAME`              | `FoundryDockerWorld`    | Sets the server world name 🗺️. This is the folder name within `FoundryDedicatedServer/Worlds/` where save files will be stored. |
+| `WORLD_NAME`              | `FoundryDockerWorld`    | Sets the server world name 🗺️. Saves are stored under `persistent_data/save/<WORLD_NAME>/`. Case-sensitive: if only the case differs from an existing save folder the container logs a warning instead of silently creating a new world. |
 | `SERVER_PWD`              | (none)                  | Sets the server password 🔑. **Highly recommended**. |
 | `SERVER_NAME`             | `Foundry Docker Server` | Name of the server listed in the Steam server browser (if public) 📢. |
-| `MAP_SEED`                | (game default)          | Sets the map seed used to generate the world 🌱. |
+| `MAP_SEED`                | (game default)          | Sets the map seed used to generate the world 🌱. Written as the official `mapseed` option; legacy `map_seed=` lines in an existing `app.cfg` are migrated automatically (fixes #33). |
 | `SERVER_MAX_PLAYERS`      | `10`                    | Sets the maximum number of players allowed on the server 🧑‍🤝‍🧑. |
 | `PAUSE_SERVER_WHEN_EMPTY` | `false`                 | `true` or `false`. Pauses the server when no players are connected ⏸️. |
 | `AUTOSAVE_INTERVAL`       | `300`                   | Autosave frequency in seconds ⏱️. |

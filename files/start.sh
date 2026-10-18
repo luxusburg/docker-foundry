@@ -46,6 +46,12 @@ verify_server_install() {
         log_error '[ERROR] Foundry server installation failed - FoundryDedicatedServer.exe missing'
         exit 1
     fi
+    # Issue #29: make the actually-installed build (incl. beta branch) visible
+    # right after the update, so version mismatch questions are answerable
+    # from `docker logs` alone.
+    if [ -f "$server_files/version.txt" ]; then
+        log_info "Installed server version: $(cat "$server_files/version.txt")${BETANAME:+ (branch: $BETANAME)}"
+    fi
 }
 
 # Apply a deferred restore (backup.sh --restore without --now) before the
@@ -107,6 +113,22 @@ if [ ! -z $CUSTOM_CONFIG ]; then
 else
     log_info "Running setup script for the app.cfg file"
     source ./scripts/env2cfg.sh
+fi
+
+# Upgrade guard: the old image lowercased WORLD_NAME, so a volume may hold a
+# save folder 'myworld' while app.cfg now says 'MyWorld'. The game would then
+# silently generate a NEW world instead of loading the old one. Warn loudly
+# with the remedy instead of letting that surprise happen.
+cfg_world_name=$(grep '^server_world_name=' "$server_files/app.cfg" 2>/dev/null | tail -1 | cut -d= -f2- | sed "s/^['\"]//; s/['\"]$//")
+if [ -n "$cfg_world_name" ] && [ -d "$persistent_data/save" ]; then
+    if [ ! -d "$persistent_data/save/$cfg_world_name" ]; then
+        near_match=$(find "$persistent_data/save" -maxdepth 1 -type d -iname "$cfg_world_name" ! -name "$cfg_world_name" 2>/dev/null | head -1)
+        if [ -n "$near_match" ]; then
+            log_warn "app.cfg world name '$cfg_world_name' does not match existing save folder '$(basename "$near_match")' except for CASE!"
+            log_warn "The game would create a NEW world '$cfg_world_name' and your old save would look missing (it is not deleted)."
+            log_warn "Fix either: rename the save folder to '$cfg_world_name', or set WORLD_NAME=$(basename "$near_match") to load the existing save."
+        fi
+    fi
 fi
 
 log_step 3 "Backup scheduler"

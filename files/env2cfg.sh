@@ -2,6 +2,20 @@
 
 APP_FILE="$server_files/app.cfg"
 
+# Migration for issue #33: the game's option is 'mapseed' (no underscore);
+# older images wrote 'map_seed', which the server silently ignored. Rename a
+# legacy line in-place so hand-set seeds survive, then env2cfg rewrites it
+# from the MAP_SEED variable below.
+if grep -q '^map_seed=' "$APP_FILE" 2>/dev/null && ! grep -q '^mapseed=' "$APP_FILE"; then
+    CFG_LEGACY=map_seed CFG_NEW=mapseed awk '{
+        if ($0 ~ ("^" ENVIRON["CFG_LEGACY"] "=")) {
+            sub("^" ENVIRON["CFG_LEGACY"] "=", ENVIRON["CFG_NEW"] "=")
+        }
+        print
+    }' "$APP_FILE" > "${APP_FILE}.tmp" && cat "${APP_FILE}.tmp" > "$APP_FILE"
+    rm -f "${APP_FILE}.tmp"
+fi
+
 variables=( 
     "WORLD_NAME" "server_world_name"
     "SERVER_PWD" "server_password"
@@ -10,7 +24,7 @@ variables=(
     "SERVER_IS_PUBLIC" "server_is_public"
     "SERVER_PORT" "server_port"
     "SERVER_QUERY_PORT" "server_query_port"
-    "MAP_SEED" "map_seed"
+    "MAP_SEED" "mapseed"
     "SERVER_NAME" "server_name"
     "SERVER_MAX_PLAYERS" "server_max_players"
     "MAX_TRANSFER_RATE" "max_transfer_rate"
