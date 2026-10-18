@@ -4,8 +4,8 @@
 # Check if old volume mounts exists from before 1.3 # we check for 2 but only warned about 1
 if [ -d '/mnt/foundry/server' ] || [ -d '/mnt/foundry/persistentdata' ]; then
     echo "Old docker volume setup found!"
-    echo "Change your volume from /your/path/:/mnt/foundry/server too /your/path/:/home/foundry/server_files"
-    echo "Change your volume from /your/path/:/mnt/foundry/persistentdata too /your/path/:/home/foundry/persistent_data"
+    echo "Change your volume from /your/path/:/mnt/foundry/server to /your/path/:/home/foundry/server_files"
+    echo "Change your volume from /your/path/:/mnt/foundry/persistentdata to /your/path/:/home/foundry/persistent_data"
     echo "Check release notes 1.3 for more information!"
     echo "https://github.com/luxusburg/docker-foundry/releases"
     exit 1
@@ -16,8 +16,16 @@ persistent_data=/home/foundry/persistent_data
 
 echo " "
 echo "Server files location is set to : $server_files"
-echo "Save files locaiton is set to : $persistent_data"
+echo "Save files location is set to : $persistent_data"
 echo " "
+
+# Aborts the boot if the steamcmd download did not produce a usable server.
+verify_server_install() {
+    if [ ! -f "$server_files/FoundryDedicatedServer.exe" ]; then
+        echo '[ERROR] Foundry server installation failed - FoundryDedicatedServer.exe missing' >&2
+        exit 1
+    fi
+}
 
 # Apply a deferred restore (backup.sh --restore without --now) before the
 # server starts, so the game loads the restored save.
@@ -36,21 +44,25 @@ echo " "
 
 if [ ! -z $BETANAME ];then
     if [ ! -z $BETAPASSWORD ]; then
-        echo "Using beta $BETANAME with the password $BETAPASSWORD"
+        # Never log the beta password, it is a secret.
+        echo "Using beta $BETANAME with the password ****"
         steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir "$server_files" +login anonymous +app_update "2915550 -beta $BETANAME -betapassword $BETAPASSWORD" validate +quit
+        verify_server_install
     else
-        echo "Using beta $BETANAME without a password!" 
+        echo "Using beta $BETANAME without a password!"
         steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir "$server_files" +login anonymous +app_update "2915550 -beta $BETANAME" validate +quit
+        verify_server_install
     fi
 else
     echo "No beta branch used."
     steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir "$server_files" +login anonymous +app_update 2915550 validate +quit
+    verify_server_install
 fi
 
 echo "steam_appid: "`cat $server_files/steam_appid.txt`
 echo " "
 
-echo "Checking if app.cfg files exists and no env virables were set"
+echo "Checking if app.cfg files exists and no env variables were set"
 if [ ! -f "$server_files/app.cfg" ]; then
     echo "$server_files/app.cfg not found. Copying default file."
     cp "/home/foundry/scripts/app.cfg" "$server_files/" 2>&1
@@ -96,13 +108,12 @@ fi
 echo " "
 echo "Cleaning possible X11 leftovers"
 echo " "
-if [ -f /tmp/.X0-lock ] || [ -d /tmp/ ]; then
-    if [ -f /tmp/.X0-lock ]; then
-        rm /tmp/.X0-lock > /dev/null 2>&1
-    fi
-    if [ -d /tmp/ ]; then
-        rm -r /tmp/* > /dev/null 2>&1
-    fi
+# Clean up X11 lock files and stale socket directories only. /tmp holds other
+# runtime data (sockets, temp files of the scheduler and the server itself), so
+# it must never be wiped as a whole. Absent files are not an error.
+rm -f /tmp/.X*-lock > /dev/null 2>&1
+if [ -d /tmp/.X11-unix ]; then
+    rm -rf /tmp/.X11-unix/* > /dev/null 2>&1
 fi
 
 if [ -d $server_files/Mods ]; then

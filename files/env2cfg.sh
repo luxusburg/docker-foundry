@@ -16,22 +16,53 @@ variables=(
     "MAX_TRANSFER_RATE" "max_transfer_rate"
 )
 
+# Only booleans and numbers are lowercased. Everything that ends up as a path,
+# folder name, seed or display name must keep its exact case.
+lowercase_vars=(
+    "PAUSE_SERVER_WHEN_EMPTY"
+    "AUTOSAVE_INTERVAL"
+    "SERVER_IS_PUBLIC"
+    "SERVER_PORT"
+    "SERVER_QUERY_PORT"
+    "SERVER_MAX_PLAYERS"
+    "MAX_TRANSFER_RATE"
+)
+
+should_lowercase() {
+    local candidate
+    for candidate in "${lowercase_vars[@]}"; do
+        if [ "$candidate" = "$1" ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 for ((i=0; i<${#variables[@]}; i+=2)); do
     var_name=${variables[$i]}
     config_name=${variables[$i+1]}
 
     if [ ! -z "${!var_name}" ]; then
         echo "${config_name} set to: ${!var_name}"
-        # Check if this is SERVER_PWD or SERVER_NAME
-        if [[ "$var_name" == "SERVER_PWD" || "$var_name" == "SERVER_NAME" ]]; then
-            # Don't convert to lowercase for these variables
-            value="${!var_name}"
-        else
-            # Convert to lowercase for other variables
+        if should_lowercase "$var_name"; then
+            # Booleans and numbers: safe to lowercase
             value="${!var_name,,}"
+        else
+            # SERVER_PWD, SERVER_NAME, WORLD_NAME and MAP_SEED are
+            # case-sensitive: keep the value exactly as it was given
+            value="${!var_name}"
         fi
-        if grep -q "$config_name" "$APP_FILE"; then
-            sed -i "/$config_name=/c $config_name=$value" "$APP_FILE"
+        if grep -q "^${config_name}=" "$APP_FILE"; then
+            # Rewrite the value with awk instead of sed: the value is passed
+            # through the environment, so / & | " ' and backslashes stay intact.
+            CFG_KEY="$config_name" CFG_VALUE="$value" awk '{
+                if ($0 ~ ("^" ENVIRON["CFG_KEY"] "=")) {
+                    print ENVIRON["CFG_KEY"] "=" ENVIRON["CFG_VALUE"]
+                } else {
+                    print
+                }
+            }' "$APP_FILE" > "${APP_FILE}.tmp" && cat "${APP_FILE}.tmp" > "$APP_FILE"
+            rm -f "${APP_FILE}.tmp"
         else
             echo -ne "\n$config_name=$value" >> "$APP_FILE"
         fi
