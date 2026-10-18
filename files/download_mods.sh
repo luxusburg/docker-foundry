@@ -1,6 +1,10 @@
 #!/bin/bash
 set -eo pipefail
 
+# Shared logging helpers (this file is sourced by start.sh from another cwd,
+# so resolve the path from BASH_SOURCE, not from $0 or the cwd).
+source "$(dirname "${BASH_SOURCE[0]}")/log.sh"
+
 # Configuration
 MODLIST_FILE="$server_files/Mods/modList.json"
 APP_ID=983870
@@ -14,8 +18,8 @@ export APP_ID
 
 # Error handling
 fail() {
-    echo "[ERROR] $1" >&2
-    [[ -f "$STEAMCMD_LOG" ]] && echo "Check logs: $STEAMCMD_LOG" >&2
+    log_error "$1"
+    [[ -f "$STEAMCMD_LOG" ]] && log_error "Check logs: $STEAMCMD_LOG"
     exit 1
 }
 
@@ -37,7 +41,7 @@ validate_modlist() {
 
 # Generate complete mods.txt
 generate_modlist() {
-    echo "Generating complete $MODS_TXT..."
+    log_info "Generating complete $MODS_TXT..."
     
     # Start with SteamCMD commands
     cat <<EOF > "$MODS_TXT"
@@ -56,32 +60,32 @@ EOF
     
     # Count mods for logging
     MOD_COUNT=$(jq -r '.mods[] | select(.workshopFileId?) | .workshopFileId' "$MODLIST_FILE" | wc -l)
-    echo "Generated commands for $MOD_COUNT mod(s)"
+    log_info "Generated commands for $MOD_COUNT mod(s)"
 }
 
 # Copy mods to final destination
 copy_mods() {
-    echo "=== Copying all mods to the Mods folder ==="
+    log_info "=== Copying all mods to the Mods folder ==="
     
     # Copy each mod individually to handle errors per mod
     for mod_id in $(ls "$CONTENT_DIR"); do
         mod_source="$CONTENT_DIR/$mod_id"
         mod_dest="$MODS_DIR/$mod_id"
         
-        echo "Copying mod $mod_id..."
+        log_info "Copying mod $mod_id..."
         if [ -d "$mod_source" ]; then
-            cp -rf "$mod_source" "$mod_dest" || echo "[WARNING] Failed to copy mod $mod_id"
+            cp -rf "$mod_source" "$mod_dest" || log_warn "Failed to copy mod $mod_id"
         else
-            echo "[WARNING] Mod $mod_id not found in download directory"
+            log_warn "Mod $mod_id not found in download directory"
         fi
     done
     
-    echo "=== Mod copy completed ==="
+    log_info "=== Mod copy completed ==="
 }
 
 # Main execution
 {
-    echo "=== Mod Download Started $(date) ==="
+    log_info "=== Mod Download Started $(date) ==="
     
     # Validate input
     validate_modlist
@@ -90,8 +94,8 @@ copy_mods() {
     generate_modlist
     
     # Single SteamCMD execution
-    echo "Starting bulk download via SteamCMD..."
-    echo "Using command file:"
+    log_info "Starting bulk download via SteamCMD..."
+    log_info "Using command file:"
     cat "$MODS_TXT"
     
     steamcmd +runscript "$MODS_TXT" || fail "SteamCMD download failed"
@@ -99,5 +103,5 @@ copy_mods() {
     # Copy downloaded mods to final location
     copy_mods
     
-    echo "=== All operations completed successfully ==="
+    log_info "=== All operations completed successfully ==="
 } | tee -a "$STEAMCMD_LOG"

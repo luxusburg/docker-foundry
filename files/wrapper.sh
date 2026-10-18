@@ -1,11 +1,14 @@
 #!/bin/bash
 # foundry-wrapper.sh
 
+# Shared logging helpers (this file is sourced by start.sh).
+source "$(dirname "${BASH_SOURCE[0]}")/log.sh"
+
 # Location of server executable
 SERVER_EXE="$server_files/FoundryDedicatedServer.exe"
 
 cleanup() {
-    echo "Received shutdown signal, stopping Foundry server..."
+    log_warn "Received shutdown signal, stopping Foundry server..."
     
     # Send SIGTERM to wine process
     kill -TERM "$wine_pid" 2>/dev/null
@@ -19,11 +22,11 @@ cleanup() {
     
     # Force kill if still running
     if kill -0 "$wine_pid" 2>/dev/null; then
-        echo "Server did not shutdown gracefully, forcing exit..."
+        log_warn "Server did not shutdown gracefully, forcing exit..."
         kill -KILL "$wine_pid" 2>/dev/null
     fi
     
-    echo "Server shutdown complete"
+    log_info "Server shutdown complete"
     exit 0
 }
 
@@ -31,7 +34,7 @@ cleanup() {
 trap cleanup SIGINT SIGTERM
 
 # Start Xvfb and Wine
-echo "Starting Foundry Dedicated Server via Xvfb and Wine"
+log_info "Starting Foundry Dedicated Server via Xvfb and Wine"
 xvfb-run wine "$SERVER_EXE" -log 2>&1 &
 wine_pid=$!
 
@@ -40,6 +43,6 @@ wait "$wine_pid"
 
 # Handle unexpected exits
 if [ $? -ne 0 ]; then
-    echo "Server process exited unexpectedly"
+    log_error "Server process exited unexpectedly"
     exit 1
 fi

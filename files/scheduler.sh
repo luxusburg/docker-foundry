@@ -9,10 +9,14 @@
 # BACKUP_INTERVAL keeps its old contract: a standard 5-field cron expression
 # (minute hour day-of-month month day-of-week), e.g. "0 * * * *" for hourly.
 
+# Shared logging helpers (safe to source; this file is also sourced by tests).
+source "$(dirname "${BASH_SOURCE[0]}")/log.sh"
+
 BACKUP_SCRIPT="${BACKUP_SCRIPT:-/home/foundry/scripts/backup.sh}"
 DEFAULT_INTERVAL="0 * * * *"
 
-log() { printf '[%s] [SCHEDULER] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"; }
+# Tagged logging: keeps the [SCHEDULER] tag, formatting lives in log.sh.
+log() { log_info_tag SCHEDULER "$*"; }
 
 # --- cron expression matching ---------------------------------------------
 

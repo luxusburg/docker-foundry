@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Shared logging helpers.
+source "$(dirname "${BASH_SOURCE[0]}")/log.sh"
+
 # Apply PUID/PGID at runtime so files written to the mounted volumes are
 # owned by the user/group the host expects. Defaults to 1000:1000.
 PUID=${PUID:-1000}
@@ -9,12 +12,12 @@ current_uid=$(id -u foundry)
 current_gid=$(getent group foundry | cut -d: -f3)
 
 if [ "$PGID" != "$current_gid" ]; then
-    echo "Updating foundry group id: $current_gid -> $PGID"
+    log_info "Updating foundry group id: $current_gid -> $PGID"
     sudo groupmod -o -g "$PGID" foundry
 fi
 
 if [ "$PUID" != "$current_uid" ]; then
-    echo "Updating foundry user id: $current_uid -> $PUID"
+    log_info "Updating foundry user id: $current_uid -> $PUID"
     sudo usermod -o -u "$PUID" foundry
 fi
 

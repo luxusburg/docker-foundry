@@ -20,6 +20,9 @@
 
 set -u
 
+# Shared logging helpers.
+source "$(dirname "${BASH_SOURCE[0]}")/log.sh"
+
 LOC_DIR="${PERSISTENT_DATA:-/home/foundry/persistent_data}"
 BACKUP_DIR="$LOC_DIR/backup"
 PENDING_FILE="$LOC_DIR/.restore_pending"
@@ -31,8 +34,9 @@ MIN_FREE_MB="${MIN_FREE_MB:-500}"
 SAVE_DIR="$LOC_DIR/save"
 CONTINUE_FILE="$LOC_DIR/continue_game.json"
 
-log()  { printf '[%s] [BACKUP] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"; }
-err()  { printf '[%s] [BACKUP] [ERROR] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >&2; }
+# Tagged logging: keeps the [BACKUP] tag, formatting lives in log.sh.
+log()  { log_info_tag BACKUP "$*"; }
+err()  { log_error_tag BACKUP "$*"; }
 
 human_size() {
     awk -v b="${1:-0}" 'BEGIN {

@@ -206,6 +206,7 @@ The container uses environment variables for configuration.
 | `SERVER_QUERY_PORT`       | `27015`                 | Network port for Steam server browser queries (used if `SERVER_IS_PUBLIC=true`) 📡. |
 | `MAX_TRANSFER_RATE`       | `1024` (KiB/s)          | Maximum data transfer rate for clients 📶. **Max:** `8192`. |
 | `CUSTOM_CONFIG`           | `false`                 | Set to `true` if you want the server to exclusively use a manually provided `app.cfg` file (located in persistent data) 📝. |
+| `LOG_LEVEL`               | `info`                  | Script log verbosity: `error`, `warn`, `info` or `trace` 🔍 (see [Logging](#-logging)). |
 
 ### 🗳️ Backup Settings
 
@@ -242,6 +243,24 @@ To use a beta branch of the game:
 |-----------------|-------------------|--------------------------------------------------|
 | `BETANAME`     | `(none)`          | Name of the Steam beta branch to use.            |
 | `BETAPASSWORD` | `(none)`          | Password for the beta branch, if required.       |
+
+## 📜 Logging
+
+All container scripts log through a shared helper, so every line is timestamped and tagged:
+
+```
+[2026-10-18 16:42:03] [INFO ] No beta branch used.
+[2026-10-18 16:42:11] [WARN ] '1x' is not a valid retention count. Using 10.
+[2026-10-18 16:42:12] [ERROR] modList.json not found at /home/foundry/server_files/Mods/modList.json
+== Phase 1: Server update ==
+```
+
+* A startup banner shows the effective configuration (image version, world, TZ, PUID:PGID, mods, beta branch) so you can see at a glance what the container is actually running.
+* Errors go to stderr, everything else to stdout — both are visible in `docker logs -f foundry-server`.
+* Colors are only used on an interactive terminal; `docker logs` output stays clean.
+* Game/steamcmd output is passed through unmodified.
+
+Set `LOG_LEVEL` to control verbosity: `error`, `warn`, `info` (default) or `trace` for script-level debugging.
 
 ## 💖 Contributing
 
