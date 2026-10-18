@@ -127,9 +127,26 @@ docker compose up -d
 
 ## 💾 Backup and Recovery
 
-Backups are enabled by default and stored in the `backup` subfolder within your persistent data volume (e.g., `./data/backup/`).
+Backups are enabled by default and stored in the `backup` subfolder within your persistent data volume (e.g., `./data/backup/`). They run on an in-container scheduler (no cron daemon needed), which means they respect your `TZ` and `BACKUP_RETENTION` settings, run as the `foundry` user (no root-owned files on the host), and show up directly in `docker logs`. Each backup is integrity-checked before it is kept, and a free-disk-space guard skips (with a loud error) instead of filling up your volume.
 
-**To recover a backup:**
+The backup tool can also be run by hand:
+
+```bash
+# list existing backups
+docker exec foundry-server /home/foundry/scripts/backup.sh --list
+
+# create a backup right now
+docker exec foundry-server /home/foundry/scripts/backup.sh --create
+
+# restore the latest backup (or a named file) — applied safely on next start
+docker exec foundry-server /home/foundry/scripts/backup.sh --restore latest
+docker restart foundry-server
+```
+
+> [!NOTE]
+> Restoring without `--now` only marks the restore as *pending*: it is applied automatically the next time the container starts, before the server boots. The save that was active before the restore is always kept in a `data/pre_restore_<timestamp>/` safety folder. Use `--now --yes` only when the server is stopped.
+
+**Manual recovery (without the container):**
 
 1. Stop the Foundry server container:
 ```bash
@@ -147,6 +164,9 @@ tar -xzvf ./data/backup/foundry-backup-YYYY-MM-DD_HH-MM-SS.tar.gz -C ./data/
 ```
 **This will restore the save folder into `./data/`**
 3. Restart the container
+
+> [!TIP]
+> Prefer the `backup.sh --restore` command above — it verifies archive integrity, keeps a safety copy of the current save, and refuses to run on a corrupt backup.
 
 ## 🧩 Enabling and Managing Mods
 
@@ -197,6 +217,8 @@ The container uses environment variables for configuration.
 | `BACKUPS`         | `true`                 | `true` or `false`. Enables or disables the automatic backup system. |
 | `BACKUP_INTERVAL` | `0 * * * *`            | Cron schedule for backups (e.g., `0 * * * *` for every hour at minute 0) 🗓️ [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) |
 | `BACKUP_RETENTION`| `10` (backups)         | Sets how many backup files are kept. |
+| `MIN_FREE_MB`     | `500`                  | Minimum free space (in MB, on top of the current save size) required on the data volume before a backup runs. 🛡️ |
+| `NO_CRON`         | `(unset)`              | Any value disables automatic backups entirely (kept for the legacy `non_cron` image tag; the normal way to disable backups is `BACKUPS=false`). |
 
 ### 👤 User PUID/PGID
 

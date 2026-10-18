@@ -11,14 +11,13 @@ ENV TZ='Europe/Berlin'
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 
-# Install wine, xvfb, cron, and xauth (required for xvfb-run)
+# Install wine, xvfb, xauth (required for xvfb-run), jq and helpers
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         jq \
         wine \
         xvfb \
         xauth \
-        cron \
         tzdata \
         locales \
         sudo && \
@@ -47,11 +46,9 @@ RUN chmod +x $HOME/scripts/*.sh
 ENTRYPOINT ["/bin/bash", "/home/foundry/scripts/entrypoint.sh"]
 CMD ["/home/foundry/scripts/start.sh"]
 
+# Backward-compatible build target. Automatic backups are handled by an
+# in-process scheduler (files/scheduler.sh) since the cron setup was removed,
+# so image-cron and base are identical. The target only exists so the
+# existing CI matrix keeps working.
 FROM base AS image-cron
-USER root
-# Setting up cron file for backup
-ADD --chown=$USER:$USER ./files/foundry-cron /etc/cron.d/foundry-cron
-RUN chmod 0644 /etc/cron.d/foundry-cron && \
-    crontab /etc/cron.d/foundry-cron && \
-    service cron start
-USER $USER
+

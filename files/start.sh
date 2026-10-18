@@ -19,6 +19,15 @@ echo "Server files location is set to : $server_files"
 echo "Save files locaiton is set to : $persistent_data"
 echo " "
 
+# Apply a deferred restore (backup.sh --restore without --now) before the
+# server starts, so the game loads the restored save.
+if [ -f "$persistent_data/.restore_pending" ]; then
+    pending_backup=$(cat "$persistent_data/.restore_pending")
+    echo "Pending restore found: $pending_backup"
+    PERSISTENT_DATA="$persistent_data" bash /home/foundry/scripts/backup.sh --restore "$pending_backup" --now --yes
+    rm -f "$persistent_data/.restore_pending"
+fi
+
 mkdir -p /home/foundry/.steam 2>/dev/null
 chmod -R 777 /home/foundry/.steam 2>/dev/null
 echo " "
@@ -71,18 +80,17 @@ else
 fi
 
 echo " "
+# Automatic backups run through an in-process scheduler instead of cron:
+# it sees the container environment (BACKUP_RETENTION, TZ), logs to
+# `docker logs`, and runs as the foundry user (no root-owned archives).
 if [ -n "$NO_CRON" ]; then
-    echo "No Cron image used!"
+    echo "No-Cron image used! Automatic backups are disabled."
+elif [ "$BACKUPS" = false ]; then
+    echo "[IMPORTANT] Backups are disabled!"
 else
-    sudo -u root cron
-
-    if [ "$BACKUPS" = false ]; then
-        echo "[IMPORTANT] Backups are disabled!"
-        sudo -u root sed -i "/backup.sh/c # 0 * * * * /home/foundry/scripts/backup.sh 2>&1" /var/spool/cron/crontabs/root
-    elif [ -n "$BACKUP_INTERVAL" ]; then
-        echo "Changing backup interval to $BACKUP_INTERVAL"
-        sudo -u root sed -i "/backup.sh/c $BACKUP_INTERVAL /home/foundry/scripts/backup.sh 2>&1" /var/spool/cron/crontabs/root
-    fi
+    echo "Starting backup scheduler..."
+    bash /home/foundry/scripts/scheduler.sh &
+    echo "Backup scheduler running (pid $!)."
 fi
 
 echo " "
