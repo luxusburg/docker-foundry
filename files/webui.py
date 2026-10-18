@@ -244,7 +244,14 @@ class Handler(BaseHTTPRequestHandler):
         if not header.startswith("Bearer "):
             return False
         token = header[len("Bearer "):].strip()
-        return hmac.compare_digest(token, WEBUI_TOKEN)
+        # Compare as UTF-8 bytes: str-vs-str compare_digest raises TypeError
+        # on non-ASCII characters, which would leak as an HTTP 500 instead of
+        # a clean 401 (found during live testing with a token containing
+        # non-ASCII characters). Any auth oddity must never be a 5xx.
+        try:
+            return hmac.compare_digest(token.encode("utf-8"), WEBUI_TOKEN.encode("utf-8"))
+        except Exception:
+            return False
 
     def _body_json(self):
         """Parsed JSON request body, or {} when absent/invalid."""
