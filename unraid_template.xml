@@ -43,12 +43,12 @@ docker run -d \&#xD;
     --name foundry \&#xD;
     -p 3724:3724/udp \    &#xD;
     -p 27015:27015/udp \&#xD;
-    -v ./server:/mnt/foundry/server \&#xD;
-    -v ./data:/mnt/foundry/persistentdata \&#xD;
+    -v ./server:/home/foundry/server_files \&#xD;
+    -v ./data:/home/foundry/persistent_data \&#xD;
     -e TZ=Europe/Paris \&#xD;
-    -e SERVER_PWD=change_me&#xD;
-    -e SERVER_NAME='Foundry docker by Luxusburg'&#xD;
-    -e PAUSE_SERVER_WHEN_EMPTY=false&#xD;
+    -e SERVER_PWD=change_me \&#xD;
+    -e SERVER_NAME='Foundry docker by Luxusburg' \&#xD;
+    -e PAUSE_SERVER_WHEN_EMPTY=false \&#xD;
     luxusburg/docker-foundry:latest&#xD;
 ```&#xD;
 &#xD;
@@ -76,8 +76,8 @@ services:&#xD;
       - SERVER_NAME='Foundry docker by Luxusburg'&#xD;
       - PAUSE_SERVER_WHEN_EMPTY=false&#xD;
     volumes:&#xD;
-      - './server:/mnt/foundry/server:rw'&#xD;
-      - './data:/mnt/foundry/persistentdata:rw'&#xD;
+      - './server:/home/foundry/server_files:rw'&#xD;
+      - './data:/home/foundry/persistent_data:rw'&#xD;
     ports:&#xD;
       - '3724:3724/udp'&#xD;
       - '27015:27015/udp'&#xD;
@@ -85,7 +85,7 @@ services:&#xD;
 &#xD;
 ## Backup &amp;amp; recovery&#xD;
 &#xD;
-Backups are all saved in the folder you set in your volume for `/location/of/folder:/mnt/foundry/persistentdata`&#xD;
+Backups are all saved in the folder you set in your volume for `/location/of/folder:/home/foundry/persistent_data`&#xD;
 There should be a folder in it called `backup`.&#xD;
 &#xD;
 Per Default backups are activated and done every hour of the day you can change this by looking at the environment variables further below.&#xD;
@@ -126,17 +126,24 @@ You can use these environment variables for your game settings:&#xD;
 | -------------------- | ---------------------------- | ------------------------------------------------------------------------------- |&#xD;
 | BACKUPS | true (default) or false | Activate backups |&#xD;
 | BACKUP_INTERVAL | default: 0 * * * * | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) value for the backups |&#xD;
-| BACKUP_RETENTION | default: 30 min: 1 |Sets how many days the backups should be kept |</Overview>
+| BACKUP_RETENTION | default: 30 min: 1 |Sets how many backup files are kept, the last N backups are kept and older ones are deleted |</Overview>
   <Category>GameServers:</Category>
   <Icon/>
   <DateInstalled>1715847941</DateInstalled>
   <Config Name="server_files" Target="/home/foundry/server_files" Default="/mnt/user/appdata/foundry/server_files" Mode="rw" Description="" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/foundry/server_files</Config>
   <Config Name="persistent_data" Target="/home/foundry/persistent_data" Default="/mnt/user/appdata/foundry/persistent_data" Mode="rw" Description="" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/foundry/persistent_data</Config>
   <Config Name="SERVER_NAME" Target="SERVER_NAME" Default="Foundry docker by Luxusburg" Mode="" Description="This is the name of the server listed in the Steam server browser." Type="Variable" Display="always" Required="false" Mask="false">Foundry docker by Luxusburg</Config>
-  <Config Name="SERVER_IS_PUBLIC" Target="SERVER_IS_PUBLIC" Default="true|false" Mode="" Description="Sets whether the server is listed on the Steam server browser." Type="Variable" Display="always" Required="false" Mask="false">false</Config>
+  <Config Name="SERVER_IS_PUBLIC" Target="SERVER_IS_PUBLIC" Default="false" Mode="" Description="Sets whether the server is listed on the Steam server browser." Type="Variable" Display="always" Required="false" Mask="false">false</Config>
   <Config Name="WORLD_NAME" Target="WORLD_NAME" Default="" Mode="" Description="" Type="Variable" Display="always" Required="false" Mask="false">MyFancyFactory</Config>
   <Config Name="MAP_SEED" Target="MAP_SEED" Default="" Mode="" Description="" Type="Variable" Display="advanced-hide" Required="false" Mask="false">123456789</Config>
   <Config Name="SERVER_PORT" Target="SERVER_PORT" Default="3724" Mode="udp" Description="Sets the network port used by the game. Default is 3724." Type="Port" Display="advanced-hide" Required="false" Mask="false">3724</Config>
   <Config Name="SERVER_QUERY_PORT" Target="SERVER_QUERY_PORT" Default="27015" Mode="udp" Description="Sets the network port used by the Steam server browser to query information about the game. This is only used if the server is set to public. Default is 27015." Type="Port" Display="advanced-hide" Required="false" Mask="false">27015</Config>
-  <Config Name="PAUSE_SERVER_WHEN_EMPTY" Target="PAUSE_SERVER_WHEN_EMPTY" Default="true|false" Mode="" Description="Will the server pause when nobody is connected." Type="Variable" Display="advanced-hide" Required="false" Mask="false">true</Config>
+  <Config Name="PAUSE_SERVER_WHEN_EMPTY" Target="PAUSE_SERVER_WHEN_EMPTY" Default="true" Mode="" Description="Will the server pause when nobody is connected." Type="Variable" Display="advanced-hide" Required="false" Mask="false">true</Config>
+  <Config Name="SERVER_PWD" Target="SERVER_PWD" Default="" Mode="" Description="Sets the server password." Type="Variable" Display="always" Required="false" Mask="true">change_me</Config>
+  <Config Name="BACKUPS" Target="BACKUPS" Default="true" Mode="" Description="Activate or deactivate the automatic backups of the save files." Type="Variable" Display="always" Required="false" Mask="false">true</Config>
+  <Config Name="BACKUP_INTERVAL" Target="BACKUP_INTERVAL" Default="0 * * * *" Mode="" Description="Cron schedule value for the backups. Do not set double or single quotes." Type="Variable" Display="always" Required="false" Mask="false">0 * * * *</Config>
+  <Config Name="BACKUP_RETENTION" Target="BACKUP_RETENTION" Default="30" Mode="" Description="How many backup files to keep. The last N backups are kept and older ones are deleted. Minimum is 1." Type="Variable" Display="always" Required="false" Mask="false">30</Config>
+  <Config Name="ENABLE_MODS" Target="ENABLE_MODS" Default="false" Mode="" Description="Set this to true to enable mods on the server." Type="Variable" Display="always" Required="false" Mask="false">false</Config>
+  <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="User ID that the container runs as." Type="Variable" Display="advanced-hide" Required="false" Mask="false">99</Config>
+  <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="Group ID that the container runs as." Type="Variable" Display="advanced-hide" Required="false" Mask="false">100</Config>
 </Container>
