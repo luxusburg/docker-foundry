@@ -246,6 +246,10 @@ The container uses environment variables for configuration.
 
 ### 🗳️ Backup Settings
 
+Automatic backups run hourly by default in the `:latest` image. The
+`:non_cron` tag keeps backups **off** by default, matching its historical
+meaning; set `BACKUPS=true` there to enable them anyway.
+
 > [!WARNING]  
 > For `BACKUP_INTERVAL`, do not use double (`""`) or single (`''`) quotes around the cron schedule value.
 

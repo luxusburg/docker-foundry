@@ -53,8 +53,9 @@ ENTRYPOINT ["/bin/bash", "/home/foundry/scripts/entrypoint.sh"]
 CMD ["/home/foundry/scripts/start.sh"]
 
 # Backward-compatible build target. Automatic backups are handled by an
-# in-process scheduler (files/scheduler.sh) since the cron setup was removed,
-# so image-cron and base are identical. The target only exists so the
-# existing CI matrix keeps working.
+# in-process scheduler (files/scheduler.sh) since the cron setup was removed.
+# The marker file preserves the historical default of this variant: backups
+# ON for :latest (image-cron), OFF for :non_cron (base) unless BACKUPS=true.
 FROM base AS image-cron
+RUN touch $HOME/.image_cron
 

@@ -113,9 +113,14 @@ log_step 3 "Backup scheduler"
 # Automatic backups run through an in-process scheduler instead of cron:
 # it sees the container environment (BACKUP_RETENTION, TZ), logs to
 # `docker logs`, and runs as the foundry user (no root-owned archives).
+# Default is ON in the image-cron variant (:latest) and OFF in the base
+# variant (:non_cron); BACKUPS=true/false and NO_CRON always override.
+backup_default=false
+[ -f "$HOME/.image_cron" ] && backup_default=true
+backups_flag="${BACKUPS:-$backup_default}"
 if [ -n "$NO_CRON" ]; then
-    log_info "No-Cron image used! Automatic backups are disabled."
-elif [ "$BACKUPS" = false ]; then
+    log_info "No-Cron environment variable found! Automatic backups are disabled."
+elif [ "$backups_flag" = false ] || [ "$backups_flag" = off ] || [ "$backups_flag" = no ]; then
     log_warn "[IMPORTANT] Backups are disabled!"
 else
     log_info "Starting backup scheduler..."
