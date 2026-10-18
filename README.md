@@ -22,6 +22,7 @@ Contributions and feedback for improvements are welcome! 🤝
   - [🗂️ Volumes](#-volumes)
 - [💾 Backup and Recovery](#-backup-and-recovery)
 - [🧩 Enabling and Managing Mods](#-enabling-and-managing-mods)
+- [🖥️ Web Admin UI (optional)](#-web-admin-ui-optional)
 - [🔧 Environment Variables](#-environment-variables)
   - [🎮 Game Settings](#-game-settings)
   - [🗳️ Backup Settings](#-backup-settings)
@@ -184,6 +185,40 @@ When `ENABLE_MODS=true`, the server will attempt to check for and download/updat
 ### File Locations (relative to your mapped volumes)
 - **Mod Storage:** `your_server_files_volume/Mods/` (e.g., `./server/Mods/`)
 - **Mod Configuration:** `your_data_volume/mod_settings/` (e.g., ./data/mod_settings/`)
+
+## 🖥️ Web Admin UI (optional)
+
+The image ships a lightweight, token-protected admin page — no extra container, no pip packages, disabled by default.
+
+```yaml
+services:
+  foundry:
+    image: luxusburg/docker-foundry:latest
+    environment:
+      - SERVER_PWD=change_me_strong_password
+      - WEBUI=true                 # enable the admin UI
+      - WEBUI_TOKEN=<long-random>  # REQUIRED - the UI refuses to start without it
+      # - WEBUI_PORT=8080          # port inside the container (default 8080)
+    ports:
+      - "3724:3724/udp"
+      - "8080:8080"                # only map this if you actually want the UI reachable
+    volumes:
+      - ./server:/home/foundry/server_files:rw
+      - ./data:/home/foundry/persistent_data:rw
+    restart: unless-stopped
+```
+
+Then open `http://<host>:8080/` and enter the token.
+
+**What you can do:**
+* See server status (running, uptime, world, backups, free disk) — auto-refreshing.
+* Create a backup now, list and download-free browse them, and **restore** one (restore is deferred and safe: it applies on the next container restart and keeps a `pre_restore_*` copy of the current save).
+* Edit `app.cfg` directly (a `.bak` is kept on every save).
+* Tail the container log in the browser.
+* Restart the container from the page (type `RESTART` to confirm).
+
+> [!WARNING]
+> The UI has no user accounts — the bearer token is the only gate. Keep the port unpublished or firewalled unless you need it externally, and use a long random token. The Foundry dedicated server itself exposes no remote commands (no RCON), so the UI intentionally cannot run in-game actions.
 
 ## 🔧 Environment Variables
 
