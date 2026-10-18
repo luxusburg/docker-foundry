@@ -3,6 +3,11 @@ name: Publish Docker Image
 on:
   push:
     branches: [ "main" ]
+  # Manual emergency rebuild
+  workflow_dispatch:
+  # Weekly rebuild for base-image security freshness: Monday 04:13 UTC
+  schedule:
+    - cron: '13 4 * * 1'
 
 jobs:
 
@@ -44,3 +49,12 @@ jobs:
           push: true
           tags: ${{ matrix.image }}
           target: ${{ matrix.target }}
+          # Always start from the freshest steamcmd/steamcmd:debian base
+          pull: true
+          build-args: |
+            VERSION=${{ github.sha }}
+          labels: |
+            org.opencontainers.image.title=docker-foundry
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=https://github.com/luxusburg/docker-foundry
+            org.opencontainers.image.licenses=GPL-3.0

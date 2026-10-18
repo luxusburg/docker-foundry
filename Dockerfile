@@ -42,6 +42,11 @@ WORKDIR $HOME
 
 # Copy batch files and give execute rights
 ADD --chown=$USER:$USER ./files $HOME/scripts
+
+# Build metadata: start.sh prints this as the running build sha
+ARG VERSION=dev
+RUN echo "${VERSION}" > $HOME/scripts/VERSION
+
 RUN chmod +x $HOME/scripts/*.sh
 
 ENTRYPOINT ["/bin/bash", "/home/foundry/scripts/entrypoint.sh"]

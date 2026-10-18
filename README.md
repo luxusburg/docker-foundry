@@ -38,6 +38,7 @@ Contributions and feedback for improvements are welcome! 🤝
 * 💾 Built-in backup and restore functionality.
 * 🧩 Mod support.
 * 🧪 Support for game beta branches.
+* 🛡️ Weekly automatic image rebuilds keep base-image security patches flowing.
 
 ## ✅ Prerequisites
 
@@ -278,6 +279,20 @@ To use a beta branch of the game:
 |-----------------|-------------------|--------------------------------------------------|
 | `BETANAME`     | `(none)`          | Name of the Steam beta branch to use.            |
 | `BETAPASSWORD` | `(none)`          | Password for the beta branch, if required.       |
+
+## 🔄 Image Updates
+
+Two independent update paths:
+
+* The **game server itself** is updated by `steamcmd` on every container start — no image rebuild needed.
+* The **Debian base image and its packages** are refreshed by a weekly GitHub Actions rebuild (Mondays, 04:13 UTC), plus a manual `workflow_dispatch` run if an emergency rebuild is needed.
+
+To pick up a new image build you still have to pull and recreate the container:
+
+```bash
+docker compose pull
+docker compose up -d
+```
 
 ## 📜 Logging
 
